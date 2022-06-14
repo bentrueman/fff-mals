@@ -1,0 +1,142 @@
+---
+title: "Supplementary information for: *Sodium silicate and hexametaphosphate promote the release of (oxyhydr)oxide nanoparticles from corroding iron*"
+author: "Benjamin F. Trueman, Javier Locsin, Evelyne Dor&eacute;, Kalli Hood, and Graham A. Gagnon"
+date: "Centre for Water Resources Studies,* Department of Civil & Resource Engineering, Dalhousie University, 1360 Barrington St., Halifax, Nova Scotia, Canada B3H 4R2  \n&nbsp;   \n&nbsp;*Corresponding author  \n&nbsp;E-mail: benjamin.trueman@dal.ca    \n&nbsp;Tel:902.494.6070  \n&nbsp;Fax: 902.494.3105"
+output:
+  word_document:
+    keep_md: no
+    reference_docx: StylesTemplate.docx
+  html_document: default
+bibliography: references.bib
+csl: environmental-science-and-technology.csl
+---
+
+This document contains X tables and X figures.  
+
+```{r setup, include=FALSE}
+here::i_am("Rmarkdown/paper-si.Rmd")
+knitr::opts_chunk$set(
+  echo = FALSE,
+  dev = "png",
+  dpi = 600,
+  fig.width = 3.33,
+  fig.height = 4
+)
+options(dplyr.summarise.inform = FALSE)
+palette <- wesanderson::wes_palette("Zissou1", 6, type = "continuous")
+```
+
+```{r packages, message=FALSE}
+library("tidyverse")
+library("fffprocessr")
+source(here::here("R/functions.R"))
+```
+
+```{r theme}
+theme_set(
+  theme_minimal() + 
+    theme(
+      legend.position = "bottom",
+      legend.margin = margin(r = 1, unit = "cm")
+    )
+)
+```
+
+```{r load, message=FALSE, results="hide"}
+
+c(
+  combined = "data/fff_combined.csv",
+  mals_data = "data/mals_combined.csv",
+  calib_icp = "data/icp_calibration_files_clean.csv",
+  direct_quant = "data/icp_direct_quant.csv",
+  qc_recovery = "data/qc_recoveries.csv",
+  image_j = "data/image_j_clean.csv",
+  proteins = "data/proteins_clean.csv",
+  pdat = "data/polyp_clean.csv"
+) %>% 
+  map(~ read_csv(here::here(.x))) %>% 
+  list2env(envir = .GlobalEnv)
+
+```
+
+```{r plot-names}
+
+param_names <- tibble::tribble(
+   ~param,                       ~plot_param,
+  "208Pb",       "Pb (&mu;g L<sup>-1</sup>)",
+    "31P",        "P (&mu;g L<sup>-1</sup>)",
+   "57Fe",       "Fe (&mu;g L<sup>-1</sup>)",
+   "LS90", "90&deg; light scattering signal",
+"UV254_2",                "UV<sub>254</sub>",
+   "ls90",         "Radius of gyration (nm)"
+)
+
+sample_names <- tibble::tribble(
+          ~sample,                                                   ~plot_sample,
+        "100SiO2",      "Sodium silicate (100 mg SiO<sub>2</sub> L<sup>-1</sup>)",
+            "3PP",             "Sodium hexametaphosphate (3 mg P L<sup>-1</sup>)",
+ "FeOx-pHcontrol",                                                      "Control",
+     "100SiO2+Pb", "Sodium silicate + Pb (100 mg SiO<sub>2</sub> L<sup>-1</sup>)",
+         "3PP+Pb",        "Sodium hexametaphosphate + Pb (3 mg P L<sup>-1</sup>)",
+        "HM_2ppm",             "Sodium hexametaphosphate (2 mg P L<sup>-1</sup>)",
+  "TrimetaP_2ppm",              "Sodium trimetaphosphate (2 mg P L<sup>-1</sup>)"
+   )
+
+```
+
+
+```{r fig-s1, fig.cap="**Figure S1:** Fractograms representing pure solutions of sodium hexameta- and trimeta-phosphate.", fig.height = 2.5, fig.width = 3.33}
+
+pdat %>%
+  left_join(sample_names, by = "sample") %>% 
+  filter(time > 10, sample != "blank") %>% 
+  ggplot(aes(time, conc, col = plot_sample, group = interaction(date, sample))) + 
+  geom_line() + 
+  scale_color_manual(values = palette[c(1,4)]) +
+  labs(
+    x = "Retention time (min.)",
+    y = expression("[P] (µg L"^-1*")"),
+    col = NULL
+  ) + 
+  guides(col = guide_legend(nrow = 2)) +
+  theme(
+    legend.text = ggtext::element_markdown()
+  )
+  
+```
+
+```{r checks, eval=FALSE}
+
+# check that peak broadening is minimal between UV and ICP:
+
+combined %>% 
+  filter(
+    param %in% c("UV254_2", "57Fe"),
+    sample != "FeOx-pHcontrol",
+    date < "2021-12-01"
+  ) %>% 
+  group_by(date, sample, param) %>% 
+  mutate(conc = conc / max(conc)) %>% 
+  ggplot(aes(time, conc, col =  param, group = interaction(date, param))) + 
+  facet_wrap(vars(sample), scales = "free_y") +
+  geom_line()
+
+```
+
+```{r mals-plot, eval=FALSE}
+
+# Plot the data at all 21 angles
+
+mals_data %>% 
+  filter(time > 10, date < "2021-12-01") %>% 
+  ggplot(aes(time, conc, col = sample, group = interaction(date, sample))) + 
+  facet_wrap(
+    vars(fct_reorder(param, str_extract(param, "\\d+") %>% as.numeric())), 
+    scales = "free_y"
+  ) + 
+  geom_line() + 
+  theme(legend.position = "bottom") +
+  guides(col = guide_legend(nrow = 2)) +
+  labs(col = NULL)
+```
+

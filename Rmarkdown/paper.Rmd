@@ -1,0 +1,601 @@
+---
+title: "Sodium silicate and hexametaphosphate promote the release of (oxyhydr)oxide nanoparticles from corroding iron"
+author: "Benjamin F. Trueman, Javier Locsin, Evelyne Dor&eacute;, Kalli Hood, and Graham A. Gagnon"
+date: "Centre for Water Resources Studies,* Department of Civil & Resource Engineering, Dalhousie University, 1360 Barrington St., Halifax, Nova Scotia, Canada B3H 4R2  \n&nbsp;   \n&nbsp;*Corresponding author  \n&nbsp;E-mail: benjamin.trueman@dal.ca    \n&nbsp;Tel:902.494.6070  \n&nbsp;Fax: 902.494.3105"
+output:
+  bookdown::word_document2: 
+    fig_caption: true
+    number_sections: false
+    global_numbering: true
+    reference_docx: StylesTemplate.docx
+bibliography: references.bib
+csl: environmental-science-and-technology.csl
+---
+
+```{r setup, include=FALSE}
+here::i_am("Rmarkdown/paper.Rmd")
+knitr::opts_chunk$set(
+  echo = FALSE,
+  dev = "png",
+  dpi = 600,
+  fig.width = 3.33,
+  fig.height = 4
+)
+options(dplyr.summarise.inform = FALSE)
+palette <- wesanderson::wes_palette("Zissou1", 6, type = "continuous")
+```
+
+```{r packages, message=FALSE}
+library("tidyverse")
+library("fffprocessr")
+source(here::here("R/functions.R"))
+```
+
+```{r theme}
+theme_set(
+  theme_minimal() + 
+    theme(
+      legend.position = "bottom",
+      legend.margin = margin(r = 1, unit = "cm")
+    )
+)
+```
+
+```{r load, message=FALSE, results="hide"}
+
+c(
+  combined = "data/fff_combined.csv",
+  mals_data = "data/mals_combined.csv",
+  calib_icp = "data/icp_calibration_files_clean.csv",
+  direct_quant = "data/icp_direct_quant.csv",
+  qc_recovery = "data/qc_recoveries.csv",
+  image_j = "data/image_j_clean.csv",
+  proteins = "data/proteins_clean.csv",
+  pdat = "data/polyp_clean.csv"
+) %>% 
+  map(~ read_csv(here::here(.x))) %>% 
+  list2env(envir = .GlobalEnv)
+
+```
+
+```{r plot-names}
+
+param_names <- tibble::tribble(
+   ~param,                       ~plot_param,
+  "208Pb",       "Pb (&mu;g L<sup>-1</sup>)",
+    "31P",        "P (&mu;g L<sup>-1</sup>)",
+   "57Fe",       "Fe (&mu;g L<sup>-1</sup>)",
+   "LS90", "90&deg; light scattering signal",
+"UV254_2",                "UV<sub>254</sub>",
+   "ls90",         "Radius of gyration (nm)"
+)
+
+sample_names <- tibble::tribble(
+          ~sample,                                                   ~plot_sample,
+        "100SiO2",      "Sodium silicate (100 mg SiO<sub>2</sub> L<sup>-1</sup>)",
+            "3PP",             "Sodium hexametaphosphate (3 mg P L<sup>-1</sup>)",
+ "FeOx-pHcontrol",                                                      "Control",
+     "100SiO2+Pb", "Sodium silicate + Pb (100 mg SiO<sub>2</sub> L<sup>-1</sup>)",
+         "3PP+Pb",        "Sodium hexametaphosphate + Pb (3 mg P L<sup>-1</sup>)",
+        "HM_2ppm",             "Sodium hexametaphosphate (2 mg P L<sup>-1</sup>)",
+  "TrimetaP_2ppm",              "Sodium trimetaphosphate (2 mg P L<sup>-1</sup>)"
+   )
+
+```
+
+
+# Abstract
+
+Sequestrants such as polyphosphate and sodium silicate are used widely to control iron precipitation in drinking water, but less is known about their impact on iron corrosion scale. Here we characterize the nanoparticulate iron (oxyhydr)oxide suspensions that result from corroding cast iron coupons in solutions containing either sodium hexametaphosphate (3 mg P L^-1^) or sodium silicate (100 mg SiO~2~ L^-1^). We determined the elemental composition and size distribution of these suspensions using flow field-flow fractionation with ultraviolet, multielement, and multiangle light scattering detection (FFF-UV-MALS-ICP-MS). We used light scattering data to estimate the radius of gyration, *r~g~*, via the Zimm model, with *r^2^* ranging from 0.983--0.999. Polyphosphate and sodium silicate suspensions yielded particles in two size fractions. The smaller particles had radii of gyration equaling 21–26 nm at peak ^57^Fe intensity, and the larger particles had radii equaling 70–91 nm.  Lead associated preferentially with these particles over free hexametaphosphate, suggesting that sequestrants may interact with iron corrosion scale to yield effective transport vectors for lead in drinking water systems.  
+
+# Introduction  
+
+Polyphosphates and sodium silicates are used widely as drinking water additives, often to control aesthetic issues caused by iron from source water and pipe corrosion. These additives have been shown to decrease the colour and turbidity of iron suspensions [@robinson_effects_1987; @robinson_iron_1992; @lytle_effect_2002; @rahman_benchscale_2014; @li_understanding_2019]. They reduce particle size, alter morphology, and increase stability by imparting strongly negative zeta potentials [@magnuson_characterization_2001; @lytle_effect_2002; @rahman_benchscale_2014; @li_understanding_2019]. There is also some evidence that they control iron corrosion [@lahodny_sarc_influence_1981; @koudelka_nature_1982].
+
+Less is known about the effect of polyphosphate and sodium silicate on the release of iron from iron corrosion scale. In the short term, an elevated dose of sodium silicate (100 mg SiO~2~ L^-1^) may promote colloidal iron release from corroded iron water mains [@li_impact_2020], but little characterization of these colloids is available. The effect of polyphosphate on iron colloid release from corrosion scale is also unclear. Iron colloids are important vectors for trace element transport in drinking water systems, which is particularly relevant for controlling lead in drinking water [@trueman_understanding_2016; @trueman_characterizing_2019; @trueman_new_2016].
+
+Here, we characterize the nanoparticulate iron released from corroding cast iron coupons in the presence of sodium hexametaphosphate---a common polyphosphate additive---and sodium silicate. We determined the concentration and size distribution of colloids (1--1000 nm) and nanoparticles (1--100 nm) using flow field-flow fractionation (FFF) with ultraviolet absorbance, multielement, and multiangle light scattering detectors. We find that both sequestrants yield stable iron nanoparticle  suspensions with similar size distributions and that these colloids bind lead readily.
+
+# Methods  
+
+## Iron suspensions  
+
+To generate each suspension, we submerged two cast iron coupons in 50 mL of solution held inside a 50 mL polypropylene tube with a polyethylene cap (coupons were 76 &times; 13 &times; 1.5 mm^3^ and sourced from BioSurface Technologies). Immediately before submersion, coupons were polished with 80 and then 400 grit SiC paper. 
+
+Each solution contained 35 mg NaHCO~3~ L^-1^ (5 mg C L^-1^, Fisher Chemical) and either sodium hexametaphosphate (3 mg P L^-1^, Alfa Aesar), sodium silicate (100 mg SiO~2~ L^-1^ with a NaO:SiO~2~ ratio of 3.22, National Silicates), or no additive (the control suspension). After preparation and mixing, solution pH was adjusted to 7.5 &plusmn; 0.2 with HNO~3~ or NaOH (Fisher Chemical). 
+
+Coupons were left to stagnate for 24 hours. Afterward, each suspension was mixed by gentle swirling. Suspensions were then filtered through 0.45 µm cellulose nitrate membrane filters (Whatman) using a syringe-mounted apparatus. To minimize adsorption, the first 10 mL of each aliquot was filtered to waste, and the next 20 mL was divided between two smaller polypropylene sample tubes; one for analysis by FFF-UV-MALS-ICP-MS and the other for direct quantification of the same elements by ICP-MS after acidification to pH < 2 with concentrated trace metal grade HNO~3~ (Fisher Chemical). To characterize partitioning of lead, we added 200 µg Pb L^-1^ as Pb(NO~3~)~2~ (Fisher Chemical) to filtered sodium silicate and hexametaphosphate suspensions. Lead was allowed to react for 53 minutes before analysis by FFF. 
+
+## Field-flow fractionation  
+
+Iron suspensions were fractionated using a modified version of the method described in a recent paper [@trueman_characterizing_2019]. We used an asymmetric flow FFF system (Postnova AF2000 Multiflow) with a 300 Da poly(ethersulfone) membrane and an autosampler with a 1 mL polyether ether ketone sample loop. The system was coupled sequentially to a UV absorbance detector (Shimadzu SPD-20A), a multiangle light scattering detector (Postnova PN3621), and an ICP-MS (ThermoFisher iCAP-RQ). The mobile phase for all separations was 50 mM tris (hydroxymethyl)aminomethane, adjusted to pH 7.3 with trace metal grade HCl. FFF channel effluent was mixed with internal standards (Sc, In, and Tb) in 2% HNO~3~ using a
+mixing tee.
+
+Method parameters are summarized in Table \@ref(tab:table-run-params). The crossflow was maintained at 2.0 mL min^-1^ for the first 31 minutes of each run (including the focus and transition periods); afterward it was set to decay linearly over 2 minutes to 0.1 mL min^-1^. The crossflow was then maintained at 0.1 mL min^-1^ for 10 minutes; afterward, it was set to zero for the rinse step (the final 10 minutes of the run).
+
+```{r table-run-params, echo=FALSE}
+tibble::tribble(
+  ~Parameter, ~Value,
+  "Injection volume", "0.25 (sodium silicate) and 0.5 mL (hexametaphosphate)",
+  "Spacer", "500 µm",
+  "Total run time", "53 min",
+  "Detector flow", "1 mL min^-1^",
+  "Injection flow", "0.2 mL min^-1^",
+  "Focus flow", "2.8 mL min^-1^",
+  "Focus period", "10 min",
+  "Transition period", "1 min",
+  "Initial crossflow", "2 mL min^-1^ (first 31 min of each run)",
+  "Crossflow decay", "Linear over 2 min",
+  "Final crossflow", "0.1 mL min^-1^ (10 min)",
+  "Rinse step", "10 min (no crossflow)"
+) %>% 
+  knitr::kable(caption = "FFF run parameters.")
+```
+
+## Inductively coupled plasma mass spectrometry    
+
+```{r qc-data}
+
+to_list <- function(x) {
+  x %>% 
+    str_replace("(\\d+)([aA-zZ]+)", "^\\1^\\2") %>% 
+    glue::glue_collapse(sep = ", ", last = " and ")
+}
+
+calib_curves <- calib_icp %>% 
+  filter(param %in% c("31P", "57Fe")) %>% 
+  group_by(param) %>% 
+  summarize(r_sq = signif(median(r_sq), 3)) %>% 
+  ungroup() %>% 
+  mutate(isotope = str_extract(param, "\\d+") %>% as.numeric()) %>% 
+  arrange(isotope) %>% 
+  summarize(across(everything(), to_list))
+
+qc <- qc_recovery %>% 
+  filter(param %in% c("31P", "57Fe")) %>% 
+  group_by(sample, param) %>% 
+  summarize(value = signif(median(value), 2)) %>% 
+  ungroup() %>% 
+  group_by(sample) %>% 
+  summarize(
+    param = if_else(is.na(value), NA_character_, param),
+    recovery = to_list(value),
+    param_list = to_list(param)
+  ) %>% 
+  distinct(sample, recovery, param_list) %>% 
+  pivot_wider(names_from = sample, values_from = c(recovery, param_list)) %>% 
+  janitor::clean_names()
+  
+dl <- combined %>% 
+  filter(param %in% c("31P", "57Fe")) %>% 
+  distinct(date, param, three_sigma) %>% 
+  group_by(param) %>% 
+  summarize(
+    three_sigma = signif(median(three_sigma), 2),
+    n = n()
+  ) %>% 
+  ungroup() %>% 
+  summarize_at(vars(c(param, three_sigma, n)), ~ to_list(unique(.x)))
+
+```
+
+ICP-MS data were acquired using a ThermoFisher iCAP-RQ operated in kinetic energy discrimination mode with He as the collision gas. We calibrated the ICP-MS on each analysis day using multielement standards in 2% HNO~3~ at 25, 100, and 250 µg L^-1^. Standards were introduced to the nebulizer using the ICP-MS autosampler after mixing with FFF channel effluent at the mixing tee. Calibration curves yielded median *r^2^* values of `r calib_curves$r_sq` for `r calib_curves$param`.
+
+Quality control spikes in the same matrix (75 µg L^-1^) yielded median recoveries equaling `r qc$recovery_qc_75ppb`% of `r qc$param_list_qc_75ppb`, respectively. An independently-prepared spike at 40 µg L^-1^ yielded a median `r qc$param_list_qc_ext_40ppb` recovery of `r qc$recovery_qc_ext_40ppb`%. Detection limits were estimated using the 3$\sigma$ method, with $\sigma$ calculated separately for the elution step of `r dl$n` blanks. Median instantaneous detection limits were estimated at `r dl$three_sigma` µg L^-1^ for `r dl$param`.
+
+The deviation of the channel thickness from its nominal value of 500 µm was estimated using a method described elsewhere [@litzen_separation_1993], using ferritin and bovine serum albumin as globular protein standards with diffusion coefficients taken from literature [@clough_role_1981; @gaigalas_diffusion_1992].
+
+```{r calculate-thickness,message=FALSE}
+
+protein_peaks <- proteins %>%
+  filter(time < 18, sample != "blank") %>% 
+  peak_maxima(focus = 5) %>% 
+  pivot_wider(id_cols = -conc, names_from = sample, values_from = time)
+
+w_true_fer <- calculate_w(t1 = protein_peaks$ferritin, D = .35e-10, focus = 5, Vc = .0015, Vin = 2e-4) # ferritin
+w_true_bsa <- calculate_w(protein_peaks$BSA, D = .632e-10, focus = 5, Vc = .0015, Vin = 2e-4) # bsa
+
+```
+
+## Transmission electron microscopy (TEM)
+
+At least 13 TEM images were acquired to represent each iron suspension, using a JEOL 1230 instrument. Suspensions were vortexed, and then a 50 µL aliquot from each was loaded onto a 3 mm copper TEM grid (Formvar/Carbon FCF200). Images were scaled and then processed using ImageJ 1.53k [@schneider_nih_2012] by thresholding to differentiate particles from the background. The Feret diameter---the maximum of all transects across each perimeter---was estimated for each particle. We used a lower cutoff for particle identification of 335 nm^2^, which corresponds to the smallest spherical particle that the MALS detector can identify, based on manufacturer specifications (8 nm nominal radius of gyration). 
+
+## Data analysis  
+
+We analyzed and presented the data using R version 4.1.1 [@r] and a collection of contributed packages [@tidyverse; @rmd; @rmd_book; @rmd_cbook]. Material necessary to reproduce the results is available on GitHub [@fff_mals] and functions for post-processing FFF data are available as a separate R package [@fffprocessr].
+
+### Peak fitting  
+
+We estimated the fraction of colloidal iron present in each of the two light scattering peaks by fitting a two-peak model to each fractogram. Each peak was represented as a skewed Gaussian and the fractogram as their sum.
+
+### Multiangle light scattering  
+
+We estimated the radius of gyration ($r_g$) associated with each light scattering peak and fractogram using the Zimm model [@kammer_fieldflow_2005; @wyatt_light_1993; @baalousha_size_2006]. Specifically, we solved the following equation for $r_g^2$, the mean squared radius of gyration:
+
+$$\frac{Kc}{R(\theta)} = \frac{1}{M} + \frac{\langle{r^2_g}\rangle}{3M}\left[\frac{4\pi\eta_0}{\lambda}sin(\frac{\theta}{2})\right]^2$$
+
+where $K$ is a constant, $c$ and $M$ are the concentration and molar mass of the analyte, respectively, $\lambda$ is the wavelength of the incident light, $\theta$ is the scattering angle, $\eta_0$ is the index of refraction of the solvent, and $R$ is the Rayleigh ratio, or the scattering intensity above baseline. For environmental colloids, $K$, $c$, and $M$ are usually unknown, but $r_g^2$ can be estimated by regressing $R^{-1}$ on $sin^2(\theta/2)$. That is,
+
+$$\langle{r^2_g}\rangle = \frac{3\beta_1\lambda^2}{16\beta_0\pi^2}$$
+
+where $\beta_0$ and $\beta_1$ are the intercept and slope of the linear regression. Before fitting the model, data collected at the smallest and largest two scattering angles (7, 12, 156, and 164&deg;) were removed due to excessive noise (Figure \@ref(fig:figure-zimm)).
+
+```{r calculate-rg}
+mals_rg <- mals_data %>% 
+  filter(
+    time > 10, 
+    !param %in% c("ls7", "ls12", "ls156", "ls164"),
+  ) %>% 
+  calculate_rg(window = .05, method = "zimm") 
+```
+
+```{r figure-zimm, fig.cap="The Zimm model described the variation in light scattering over the selected range of scattering angles, with r^2^ values of 0.983--0.999.", message=FALSE}
+
+# calculate peak light scattering for each sample:
+
+peak_pos <- combined %>% 
+  filter(sample != "FeOx-pHcontrol", date < "2021-12-01") %>% 
+  peak_maxima(focus = 33, peaks = 2) %>%
+  # change peak numbering from decreasing intensity to increasing retention time:
+  arrange(sample, date, param, time) %>% 
+  group_by(date, sample, param) %>% 
+  mutate(peak = 1:2) %>% 
+  ungroup()
+
+zimm_plot_in <- mals_rg %>% 
+  left_join(
+    filter(peak_pos, param == "LS90"), 
+    by = c("date", "sample"), 
+    suffix = c("", "_peak")
+  ) %>% 
+  left_join(sample_names, by = "sample") %>% 
+  filter(time == time_peak) %>% 
+  mutate(
+    plot_sample = str_extract(plot_sample, "(?<=\\().+(?=\\))"),
+    x = sin(pi * theta / 360) ^ 2,
+    y = 1e-3 * 1 / rayleigh_ratio
+  ) %>% 
+  group_by(date, sample, peak) %>% 
+  mutate(
+    rsq = signif(cor(x, y) ^ 2, 3), 
+    max_y = max(y),
+    max_x = max(x)
+  ) %>% 
+  ungroup()
+
+zimm_plot_in %>% 
+  mutate(plot_sample = str_replace(plot_sample, "\\s\\(", "<br>(")) %>% 
+  ggplot(aes(x, y, group = interaction(date, sample))) + 
+  facet_grid(
+    cols = vars(plot_sample),
+    rows = vars(peak = paste0("Peak ", peak)),
+    scales = "free_y"
+  ) + 
+  geom_smooth(method = "lm", col = palette[1]) +
+  geom_point(size = 2, alpha = .5, shape = 16) +
+  geom_label(
+    data = function(x) distinct(x, date, sample, peak, plot_sample, rsq, max_y, max_x),
+    aes(x = max_x, y = max_y, label = glue::glue("R^2~'='~{rsq}")),
+    show.legend = FALSE, parse = TRUE,
+    alpha = .6, label.size = 0, nudge_x = -.2, nudge_y = -2e1, size = 2,
+    label.padding = unit(0.05, "lines"),
+  ) +
+  labs(
+    x = expression(italic(sin^2*(pi * theta))),
+    y = expression(italic(frac(1, "R")%*%10^3)),
+    col = NULL
+  ) + 
+  theme(
+    strip.text = ggtext::element_markdown(),
+    axis.text.x = element_text(angle = 25, hjust = 1)
+  ) +
+  guides(col = guide_legend(ncol = 2))
+
+```
+
+# Results and discussion  
+
+```{r peak-positions}
+
+pks_txt <- peak_pos %>% 
+  filter(param == "57Fe") %>% 
+  arrange(sample, date, time) %>% 
+  group_by(date, sample) %>% 
+  mutate(peak = 1:2) %>% 
+  ungroup() %>% 
+  group_by(peak) %>% 
+  summarize(
+    min = round(min(time), 1),
+    max = round(max(time), 1)
+  ) %>% 
+  pivot_wider(names_from = peak, values_from = c(min, max))
+
+peak_pos_p <- combined %>% 
+  filter(sample == "3PP", param == "31P") %>% 
+  peak_maxima()
+
+```
+
+Sodium silicate and hexametaphosphate suspensions yielded similar iron fractograms (Figure \@ref(fig:figure-fff)), with primary and secondary light scattering peaks. These peaks had maxima, based on ^57^Fe intensity, at `r pks_txt$min_1`--`r pks_txt$max_1` and `r pks_txt$min_2`--`r pks_txt$max_2` minutes. Iron was also present in a broad peak, eluting between approximately 15 and 30 minutes, that did not coincide with a significant light scattering signal but did adsorb UV light at 254 nm. This peak may represent iron nanoparticles that are too small to be quantified using the online MALS detector [@cuss_af4_icpms_2017]. In sodium hexametaphosphate suspensions, the principal ^31^P peak eluted at `r paste(round(range(peak_pos_p$time), 1), collapse = "--")` minutes, which matches the peak retention of sodium hexametaphosphate in pure water (Figure S1).
+
+```{r figure-fff, fig.cap="Fractograms representing triplicate sodium silicate and hexametaphosphate suspensions and a control suspension (no sequestrant). Theoretical hydrodynamic radius was calculated at constant crossflow, based on channel geometry and flow parameters [@baalousha_size_2006]. Light scattering and absorbance fractograms are displayed as the raw detector responses. ", fig.height=6}
+
+plot_in <- mals_rg %>% 
+  filter(param == "ls90") %>%
+  pivot_longer(c(rg_zimm, conc)) %>% 
+  mutate(
+    value = case_when(
+      name == "rg_zimm" & time < 34 ~ NA_real_,
+      name == "rg_zimm" & time >= 49.7 ~ NA_real_,
+      name == "rg_zimm" & time >= 34 ~ value,
+      TRUE ~ value
+    )
+  )
+
+combined %>% 
+  filter(
+    time > 10, 
+    param != "208Pb",
+    date < "2021-12-01"
+  ) %>%  
+  bind_rows(filter(plot_in, name == "rg_zimm")) %>% 
+  left_join(sample_names, by = "sample") %>% 
+  left_join(param_names, by = "param") %>% 
+  mutate(
+    value = coalesce(conc, value),
+    plot_param = fct_relevel(
+      plot_param,
+      "Fe (&mu;g L<sup>-1</sup>)", "P (&mu;g L<sup>-1</sup>)", 
+      after = 0L
+    )
+  ) %>% 
+  ggplot(aes(time, value, group = interaction(date, sample), col = plot_sample)) + 
+  facet_wrap(vars(plot_param), scales = "free_y", ncol = 1) +
+  geom_line() + 
+  scale_x_continuous(
+    position = "top",
+    sec.axis = sec_axis(
+      trans = function(x) 1e9 * calculate_rh(x, w = w_true_fer, Vc = 0.002, Vin = 2e-4),
+      breaks = seq(0, 10, by = 2),
+      guide = guide_axis(title = "Hydrodynamic radius (nm)")
+    )
+  ) + 
+  scale_color_manual(values = palette[c(6,1,4)]) +
+  theme(
+    legend.text = ggtext::element_markdown(),
+    strip.text = ggtext::element_markdown()
+  ) +
+  labs(x = "Retention time (min)", y = NULL, col = NULL) +
+  guides(col = guide_legend(nrow = 3))
+
+```
+
+```{r tablulate-rg}
+
+radii <- mals_rg %>% 
+  left_join(
+    filter(peak_pos, param == "57Fe"), 
+    by = c("date", "sample"), 
+    suffix = c("", "_peak")
+  ) %>% 
+  group_by(date, sample, peak) %>% 
+  mutate(time_matched = time[which.min(abs(time - time_peak))]) %>% 
+  ungroup() %>% 
+  filter(time == time_matched) %>% 
+  group_by(sample, peak) %>% 
+  summarize(
+    time = unique(time),
+    rg_zimm = unique(rg_zimm),
+    d_geom = 2 * unique(rg_zimm) / sqrt(3/5),
+    rep = unique(date) %>% factor() %>% as.numeric()
+  ) %>% 
+  ungroup()
+
+radii_text <- radii %>%
+  group_by(sample, peak) %>% 
+  summarize(min = min(rg_zimm), max = max(rg_zimm)) %>% 
+  pivot_wider(names_from = c(sample, peak), values_from = c(min, max)) %>% 
+  summarize(across(everything(), ~ signif(.x, 2)))
+  
+```
+
+```{r peak-integration}
+source(here::here("R/peak_fits.R"))
+```
+
+The estimated radii of gyration characterizing colloids in the primary and secondary peaks ranged from `r radii_text$min_100SiO2_1`--`r radii_text$max_100SiO2_1` and `r radii_text$min_100SiO2_2`--`r radii_text$max_100SiO2_2` nm in sodium silicate suspensions, and `r radii_text$min_3PP_1`--`r radii_text$max_3PP_1` and `r radii_text$min_3PP_2`--`r radii_text$max_3PP_2` nm in hexametaphosphate suspensions (Table \@ref(tab:table-radii)). While the maximum scattering intensities were similar between the two peaks, the second one accounted for an estimated 5%---or less---of the total iron concentration. This is explained by the much larger particle sizes represented in the secondary peak, and the dependence of scattering intensity on both colloid concentration and size [@korgel_vesicle_1998; @baalousha_size_based_2006].
+
+```{r table-radii}
+radii %>% 
+  arrange(sample, rep, peak) %>% 
+  left_join(pcent_tot, by = c("sample", "peak", "rep")) %>% 
+  transmute(
+    Suspension = fct_recode(sample, "Sodium silicate" = "100SiO2", "Hexametaphosphate" = "3PP") %>% 
+      unfill_vec("-"),
+    Replicate = unfill_vec(rep, "-"),
+    Peak = peak,
+    `Retention time (min)` = signif(time, 3), 
+    `Radius of gyration (nm)` = signif(rg_zimm, 3),
+    `Spherical equivalent geometric diameter (nm)` = signif(d_geom, 3),
+    `% total Fe` = round(pcent, 1)
+  ) %>% 
+  knitr::kable(caption = "Estimated radii of gyration and calculated geometric (equivalent spherical) diameters.")
+```
+
+### Transmission electron microscopy analysis  
+
+```{r image-j-stats}
+
+susp_summ <- image_j %>% 
+  group_by(susp) %>% 
+  summarize(
+    m = median(Feret), 
+    q25 = quantile(Feret, .25),
+    q75 = quantile(Feret, .75),
+    n = n()
+  ) %>% 
+  mutate(across(where(is.double), ~ signif(.x, 2)))
+
+```
+
+We identified `r paste(susp_summ$n, collapse = " and ")` particles in TEM images representing sodium silicate and hexametaphosphate suspensions, respectively, with median Feret diameters of `r paste(susp_summ$m, collapse = " and ")` nm (Figure \@ref(fig:figure-image-j)). 
+
+Since suspensions must be evaporated on a grid for TEM analysis, aggregates present in TEM images might be different from the larger particles identified by FFF-MALS. Still, there is an approximate correspondence between the equivalent spherical diameters obtained from light scattering data and the Feret distances estimated from TEM images, especially for the primary peak at a retention time of 34--35 minutes. 
+
+```{r figure-image-j, fig.cap="Histograms representing particles identified in TEM images of sodium silicate and hexametaphosphate-stabilized iron suspensions.", fig.height=2}
+
+image_j %>%
+  mutate(susp = gsub("100Si", "100SiO2", susp)) %>% 
+  left_join(sample_names, by = c("susp" = "sample")) %>% 
+  ggplot(aes(
+    x = Feret, 
+    fill = plot_sample
+  )) + 
+  geom_histogram(binwidth = 5, alpha = .8) +
+  scale_fill_manual(values = palette[c(2,4)]) +
+  scale_colour_manual(values = palette[c(2,4)]) +
+  theme(
+    legend.text = ggtext::element_markdown(),
+    strip.text = ggtext::element_markdown()
+  ) +
+  labs(
+    x = "Feret diameter (nm)",
+    y = "Count",
+    fill = NULL
+  ) + 
+  guides(fill = guide_legend(nrow = 2))
+
+```
+
+## Analyte recovery  
+
+```{r recovery}
+
+# integrate peaks:
+
+fff_conc <- combined %>% 
+  filter(
+    time > 10, 
+    param %in% c("57Fe", "31P"), 
+    date < "2021-12-01"
+  ) %>% 
+  mutate(inj_vol = if_else(str_detect(sample, "SiO2"), 2.5e-4, 5e-4)) %>% 
+  group_by(
+    date, sample = str_remove_all(sample, "O2"), 
+    param, inj_vol
+  ) %>% 
+  summarize(
+    conc_ppb = integrate_peak(
+      time, conc, 
+      injvol = unique(inj_vol)
+    )
+  ) %>% 
+  ungroup()
+
+# compare to direct ICP-MS quantification:
+recovery <- direct_quant %>% 
+  left_join(fff_conc, by = c("date", "sample", "param")) %>% 
+  filter(inj_vol != 125e-6) %>% 
+  group_by(sample, param) %>% 
+  mutate(percent_recovery = conc_ppb / value) %>% 
+  summarize(
+    n = length(na.omit(percent_recovery)),
+    sd_percent_recovery = 100 * sd(percent_recovery, na.rm = TRUE),
+    percent_recovery = 100 * mean(percent_recovery, na.rm = TRUE)
+  ) %>% 
+  ungroup() %>% 
+  filter(
+    sample %in% c("100Si", "3PP"),
+    !(sample == "100Si" & param == "31P")
+  )
+
+recovery_text <- recovery %>%
+  pivot_wider(names_from = c(sample, param), values_from = ends_with("recovery")) %>% 
+  summarize(across(everything(), ~ signif(.x, 3)))
+```
+
+```{r recovery-shmp, eval=FALSE}
+# recovery of SHMP @ 2 mg P/L
+pdat %>% 
+  filter(time > 10, sample == "HM_2ppm") %>% 
+  summarize(recovery = integrate_peak(time, conc, injvol = 5e-4) / 2e3)
+
+```
+
+We integrated the ^31^P and ^57^Fe signals over each fractogram---excluding the focus period---to estimate the concentrations of each analyte. Then, we compared these estimates to the concentrations determined by direct quantification. Recovery of ^57^Fe was `r recovery_text$percent_recovery_100Si_57Fe` $\pm$ `r recovery_text$sd_percent_recovery_100Si_57Fe` and `r recovery_text$percent_recovery_3PP_57Fe` $\pm$ `r recovery_text$sd_percent_recovery_3PP_57Fe`% in the sodium silicate and hexametaphosphate suspensions (Table \@ref(tab:table-recov)). While FFF recovered essentially all of the iron in sodium silicate suspensions, complexation by hexametaphosphate may have resulted in losses of iron to waste in separations of hexametaphosphate suspensions. And since recovery of P from a sodium hexametaphosphate standard was 111%, the partial P recovery from the iron oxide suspension suggests that hexametaphosphate hydrolyzed to orthophosphate or depolymerized to trimetaphosphate [@bell_hydrolysis_1947], species that readily pass through the FFF membrane to waste (Figure S1). The partial recovery of iron may be due to chelation by trimetaphosphate [@rasmussen_phosphate_1986], which would also escape retention by the membrane.  
+
+```{r table-recov}
+
+recovery %>% 
+  transmute(
+    Suspension = fct_recode(sample, "Sodium silicate" = "100Si", "Hexametaphosphate" = "3PP") %>% 
+      unfill_vec("-"),
+    Analyte = str_replace(param, "(\\d+)(.+)", "^\\1^\\2"), 
+    `% recovery` = signif(percent_recovery, 3),
+    `Standard deviation` = signif(sd_percent_recovery, 3),
+    N = n
+  ) %>% 
+  knitr::kable(caption = "Estimated analyte recovery, by suspension type.")
+  
+```
+
+## Potential of colloids for contaminant transport
+
+```{r fig-pb-in}
+
+fig_pb_in <- combined %>% 
+  filter(
+    time > 10, 
+    date == "2021-12-01"
+  )
+
+```
+
+```{r corr-fe-pb, eval=FALSE}
+
+fig_pb_in %>% 
+  filter(param %in% c("208Pb", "57Fe")) %>% 
+  pivot_wider(c(date, sample, time), names_from = param, values_from = conc) %>% 
+  arrange(sample, time) %>% 
+  fill(`208Pb`, `57Fe`, .direction = "downup") %>% 
+  group_by(sample) %>% 
+  summarize(cor = cor(`208Pb`, `57Fe`) ^ 2)
+
+```
+
+
+Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @xie_chapter_2007; @ainsworth_cobalt_1994], and more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015].
+
+There was little evidence, however, of lead complexation with hexametaphosphate; the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. This suggests that lead interacts preferentially with iron oxide colloids over free hexametaphosphate. The colloids that result from iron corrosion in the presence of a sequestrant, then, may represent an effective transport vector for lead in drinking water. The preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in another recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter, although both groups of colloids appeared to bind lead [@trueman_characterizing_2019]. Studies of natural waters have also found that lead associated preferentially with larger colloids and is strongly correlated with colloidal iron concentrations [@tanguy_removal_2011].
+
+```{r figure-pb, fig.cap="Fractograms representing duplicate sodium silicate and hexametaphosphate suspensions; each is paired with an equivalent suspension dosed with 200 µg Pb L^-1^. Light scattering and absorbance fractograms are displayed as the raw detector responses.", fig.height=6}
+
+fig_pb_in %>% 
+  left_join(sample_names, by = "sample") %>% 
+  left_join(param_names, by = "param") %>% 
+  ggplot(aes(time, conc, col = plot_sample, group = interaction(date, sample))) + 
+  facet_wrap(vars(plot_param), scales = "free_y", ncol = 1) + 
+  geom_line() + 
+  scale_color_manual(values = palette[c(1,4,3,6)]) + 
+  theme(
+    strip.text = ggtext::element_markdown(), 
+    legend.text = ggtext::element_markdown()
+  ) + 
+  guides(col = guide_legend(nrow = 4)) +
+  labs(x = "Retention time (min)", y = NULL, col = NULL)
+
+```
+
+This transport mechanism has important implications for drinking water quality: when polyphosphate or sodium silicate is added to minimize the aesthetic impacts of iron corrosion, the iron colloids that result may bind significant quantities of lead. And even if preliminary testing yields minimal evidence of lead complexation by the sequestrant itself, its interactions with iron may result in elevated lead concentrations. Corrosion control treatment tests, then, should account for the effects of iron corrosion when it is likely to occur in the distribution system [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @trueman_comparing_2022].
+
+# Conclusion  
+
+Sodium silicate and sodium hexametaphosphate formed nanoparticulate suspensions of iron (oxyhydr)oxide in the presence of a corroding iron surface. The size distribution of the two suspensions was similar, and particle size estimates obtained from light scattering data agreed reasonably well with those determined by TEM image analysis. Lead partitioned preferentially to iron particles over free hexametaphosphate, suggesting that the particles represent an effective transport vector for lead, and possibly for other heavy metals. This highlights a risk associated with sequestrant use in drinking water treatment: sequestrants---even those that do not form complexes with lead---may generate colloids that provide an important mobile sink for lead, potentially increasing human exposure.
+
+# Acknowledgments 
+
+This work was funded by Mitacs through the Mitacs Accelerate Program (Reference # IT23352) and NSERC through an Industrial Research Chair program (grant no. IRCPJ: 349838-16), a Postdoctoral Fellowship (E. Dor&eacute;), and a postgraduate scholarship (K. Hood). We acknowledge the technical support of Heather Daurie and the Electron Microscopy Core Facility at Dalhousie University.
+
+# References  
+

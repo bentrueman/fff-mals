@@ -1,0 +1,20 @@
+1. open new TEM image in .tiff format in ImageJ
+2. Use straight line tool to measure the scale bar (hold down shift while measuring).
+3. Analyze > Set Scale..., then enter "Known distance"" and "Unit of length", hit OK
+4. Use rectangular selector and then Image > Duplicate to select region of interest
+5. Image > Adjust > Threshold...
+6. Analyze > Analyze Particles..., check "Display results", "Exclude on edges", and "Overlay", and Show > Outlines from the dropdown menu. Set a lower cutoff of 335 nm^2 (see below).
+7. Save outline image and table results
+
+
+n.b., The PostNova PN3621 has a lower rg detection limit of 8 nm. Assuming spherical geometry, this corresponds to a geometric radius of 10.3 nm, and an area of 335 nm^2:
+
+(8 / sqrt(3/5)) ^ 2 * pi
+
+Use this as the lower limit for area estimation. 
+
+n.b., threshold lower bounds are zero throughout. Upper bounds are stored in the "Max". Column of the "XX-results.csv" files.
+
+Notes:
+
+1. 100Si-11 and 100Si-12 are very similar, use one or the other
