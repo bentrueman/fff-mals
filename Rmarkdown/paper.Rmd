@@ -599,3 +599,7 @@ This work was funded by Mitacs through the Mitacs Accelerate Program (Reference 
 
 # References  
 
+```{r session-info}
+writeLines(capture.output(devtools::session_info()), "session-info.txt")
+```
+
