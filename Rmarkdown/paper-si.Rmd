@@ -105,6 +105,23 @@ pdat %>%
   
 ```
 
+
+```{r table-s1}
+tibble::tribble(
+  ~Parameter, ~Value,
+  "Injection volume", "50 µL",
+  "Spacer", "500 µm",
+  "Total run time", "33.5 min",
+  "Detector flow", "1 mL min^-1^",
+  "Injection flow", "0.2 mL min^-1^",
+  "Focus flow", "1.5 mL min^-1^",
+  "Focus period", "5 min",
+  "Transition period", "1 min",
+  "Crossflow", "2 mL min^-1^ ",
+) %>% 
+  knitr::kable(caption = "**Table S1.** FFF run parameters for globular protein standards.")
+```
+
 ```{r checks, eval=FALSE}
 
 # check that peak broadening is minimal between UV and ICP:

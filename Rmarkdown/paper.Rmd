@@ -113,7 +113,7 @@ mixing tee.
 
 Method parameters are summarized in Table \@ref(tab:table-run-params). The crossflow was maintained at 2.0 mL min^-1^ for the first 31 minutes of each run (including the focus and transition periods); afterward it was set to decay linearly over 2 minutes to 0.1 mL min^-1^. The crossflow was then maintained at 0.1 mL min^-1^ for 10 minutes; afterward, it was set to zero for the rinse step (the final 10 minutes of the run).
 
-```{r table-run-params, echo=FALSE}
+```{r table-run-params}
 tibble::tribble(
   ~Parameter, ~Value,
   "Injection volume", "0.25 (sodium silicate) and 0.5 mL (hexametaphosphate)",
@@ -183,7 +183,7 @@ ICP-MS data were acquired using a ThermoFisher iCAP-RQ operated in kinetic energ
 
 Quality control spikes in the same matrix (75 µg L^-1^) yielded median recoveries equaling `r qc$recovery_qc_75ppb`% of `r qc$param_list_qc_75ppb`, respectively. An independently-prepared spike at 40 µg L^-1^ yielded a median `r qc$param_list_qc_ext_40ppb` recovery of `r qc$recovery_qc_ext_40ppb`%. Detection limits were estimated using the 3$\sigma$ method, with $\sigma$ calculated separately for the elution step of `r dl$n` blanks. Median instantaneous detection limits were estimated at `r dl$three_sigma` µg L^-1^ for `r dl$param`.
 
-The deviation of the channel thickness from its nominal value of 500 µm was estimated using a method described elsewhere [@litzen_separation_1993], using ferritin and bovine serum albumin as globular protein standards with diffusion coefficients taken from literature [@clough_role_1981; @gaigalas_diffusion_1992].
+The deviation of the channel thickness from its nominal value of 500 µm was estimated using a method described elsewhere [@litzen_separation_1993], using ferritin and bovine serum albumin as globular protein standards with diffusion coefficients taken from literature [@clough_role_1981; @gaigalas_diffusion_1992]. The FFF method for the globular protein runs is summarized in Table S1.
 
 ```{r calculate-thickness,message=FALSE}
 
