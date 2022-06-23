@@ -28,6 +28,8 @@ palette <- wesanderson::wes_palette("Zissou1", 6, type = "continuous")
 ```{r packages, message=FALSE}
 library("tidyverse")
 library("fffprocessr")
+library("ggtext")
+library("glue")
 source(here::here("R/functions.R"))
 ```
 
@@ -86,15 +88,41 @@ sample_names <- tibble::tribble(
 
 # Abstract
 
-Sequestrants such as polyphosphate and sodium silicate are used widely to control iron precipitation in drinking water, but less is known about their impact on iron corrosion scale. Here we characterize the nanoparticulate iron (oxyhydr)oxide suspensions that result from corroding cast iron coupons in solutions containing either sodium hexametaphosphate (3 mg P L^-1^) or sodium silicate (100 mg SiO~2~ L^-1^). We determined the elemental composition and size distribution of these suspensions using flow field-flow fractionation with ultraviolet, multielement, and multiangle light scattering detection (FFF-UV-MALS-ICP-MS). We used light scattering data to estimate the radius of gyration, *r~g~*, via the Zimm model, with *r^2^* ranging from 0.983--0.999. Polyphosphate and sodium silicate suspensions yielded particles in two size fractions. The smaller particles had radii of gyration equaling 21–26 nm at peak ^57^Fe intensity, and the larger particles had radii equaling 70–91 nm.  Lead associated preferentially with these particles over free hexametaphosphate, suggesting that sequestrants may interact with iron corrosion scale to yield effective transport vectors for lead in drinking water systems.  
+```{r image-j-stats-pooled}
+
+image_j_aug <- image_j %>% 
+  mutate(
+    Af = Feret ^ 2 * pi / 4, # area of circle with measured Feret diameter
+    r = Area / Af, # ASTM roundness
+    ds = sqrt(Area / pi) * 2 # diameter of circle with measured Area
+  )
+
+abs_summ <- image_j_aug %>% 
+  summarize(
+    across(
+      c(Feret, r, ds), 
+      .fns = list(med = median, lq = ~ quantile(.x, .25), uq = ~ quantile(.x, .75))
+    )
+  ) %>% 
+  mutate(across(everything(), ~ signif(.x, 2)))
+
+```
+
+```{r mals-stats, eval=FALSE}
+radii %>% 
+  group_by(peak) %>% 
+  summarize(across(c(rg_zimm, d_geom), median))
+```
+
+Sequestrants such as polyphosphate and sodium silicate are used widely to control iron precipitation in drinking water, but less is known about their impact on iron corrosion scale. Here we characterize the nanoparticulate iron (oxyhydr)oxide suspensions that result from corroding cast iron coupons in solutions containing either sodium hexametaphosphate (3 mg P L^-1^) or sodium silicate (100 mg SiO~2~ L^-1^). We determined the elemental composition and size distribution of these suspensions using flow field-flow fractionation with ultraviolet, multielement, and multiangle light scattering detection (FFF-UV-MALS-ICP-MS). Both sequestrants yielded stable iron suspensions, and the pooled median radius of gyration at peak ^57^Fe intensity was 22 nm, corresponding to a sphere-equivalent geometric diameter of 57 nm. The median Feret diameter and ASTM roundness was `r abs_summ$Feret_med` nm and `r abs_summ$r_med`, respectively, as determined determined by transmission electron microscopy. Lead associated readily with iron nanoparticles, and in the hexametaphosphate suspension it associated preferentially with iron over free hexametaphosphate. Sequestrants then, may interact with iron corrosion scale to yield effective transport vectors for lead in drinking water systems, even when complexation of free lead by the sequestrant is negligible.  
 
 # Introduction  
 
-Polyphosphates and sodium silicates are used widely as drinking water additives, often to control aesthetic issues caused by iron from source water and pipe corrosion. These additives have been shown to decrease the colour and turbidity of iron suspensions [@robinson_effects_1987; @robinson_iron_1992; @lytle_effect_2002; @rahman_benchscale_2014; @li_understanding_2019]. They reduce particle size, alter morphology, and increase stability by imparting strongly negative zeta potentials [@magnuson_characterization_2001; @lytle_effect_2002; @rahman_benchscale_2014; @li_understanding_2019]. There is also some evidence that they control iron corrosion [@lahodny_sarc_influence_1981; @koudelka_nature_1982].
+Polyphosphates and sodium silicates are used widely as drinking water additives, often to control aesthetic issues caused by iron from source water and pipe corrosion. These additives have been shown to decrease the colour and turbidity of iron suspensions [@robinson_effects_1987; @robinson_iron_1992; @lytle_effect_2002; @rahman_benchscale_2014; @li_understanding_2019]. They reduce particle size, alter morphology, and increase stability by imparting strongly negative zeta potentials [@magnuson_characterization_2001; @lytle_effect_2002; @rahman_benchscale_2014; @li_understanding_2019]. There is also evidence from laboratory studies that they control iron corrosion [@lahodny_sarc_influence_1981; @koudelka_nature_1982].
 
 Less is known about the effect of polyphosphate and sodium silicate on the release of iron from iron corrosion scale. In the short term, an elevated dose of sodium silicate (100 mg SiO~2~ L^-1^) may promote colloidal iron release from corroded iron water mains [@li_impact_2020], but little characterization of these colloids is available. The effect of polyphosphate on iron colloid release from corrosion scale is also unclear. Iron colloids are important vectors for trace element transport in drinking water systems, which is particularly relevant for controlling lead in drinking water [@trueman_understanding_2016; @trueman_characterizing_2019; @trueman_new_2016].
 
-Here, we characterize the nanoparticulate iron released from corroding cast iron coupons in the presence of sodium hexametaphosphate---a common polyphosphate additive---and sodium silicate. We determined the concentration and size distribution of colloids (1--1000 nm) and nanoparticles (1--100 nm) using flow field-flow fractionation (FFF) with ultraviolet absorbance, multielement, and multiangle light scattering detectors. We find that both sequestrants yield stable iron nanoparticle  suspensions with similar size distributions and that these colloids bind lead readily.
+Here, we characterize the nanoparticulate iron released from corroding cast iron coupons in the presence of sodium hexametaphosphate---a common polyphosphate additive---and sodium silicate. We determined the concentration and size distribution of colloids (1--1000 nm) and nanoparticles (1--100 nm) using flow field-flow fractionation (FFF) with ultraviolet absorbance, multielement, and multiangle light scattering detectors. We also compare these data with measurements obtained from transmission electron micrographs. We find that both sequestrants yield stable iron nanoparticle suspensions with similar size distributions and that these colloids associate with readily with lead.
 
 # Methods  
 
@@ -199,11 +227,11 @@ w_true_bsa <- calculate_w(protein_peaks$BSA, D = .632e-10, focus = 5, Vc = .0015
 
 ## Transmission electron microscopy (TEM)
 
-At least 13 TEM images were acquired to represent each iron suspension, using a JEOL 1230 instrument. Suspensions were vortexed, and then a 50 µL aliquot from each was loaded onto a 3 mm copper TEM grid (Formvar/Carbon FCF200). Images were scaled and then processed using ImageJ 1.53k [@schneider_nih_2012] by thresholding to differentiate particles from the background. The Feret diameter---the maximum of all transects across each perimeter---was estimated for each particle. We used a lower cutoff for particle identification of 335 nm^2^, which corresponds to the smallest spherical particle that the MALS detector can identify, based on manufacturer specifications (8 nm nominal radius of gyration). 
+At least 13 TEM images were acquired to represent each iron suspension, using a JEOL 1230 instrument. Suspensions were vortexed, and then a 50 µL aliquot from each was loaded onto a 3 mm copper TEM grid (Formvar/Carbon FCF200). Images were scaled and then processed using ImageJ 1.53k [@schneider_nih_2012] by thresholding to differentiate particles from the background. Two metrics---the Feret diameter (the maximum of all transects across each particle perimeter) and the ASTM roundness [@li_evaluation_2021] (the ratio of the observed area to the area of a circle with a diameter equal to the Feret diameter)---were estimated for each particle. We used a lower cutoff for particle identification of 335 nm^2^, which corresponds to the smallest spherical particle that the MALS detector can identify, based on manufacturer specifications (8 nm nominal radius of gyration). 
 
 ## Data analysis  
 
-We analyzed and presented the data using R version 4.1.1 [@r] and a collection of contributed packages [@tidyverse; @rmd; @rmd_book; @rmd_cbook]. Material necessary to reproduce the results is available on GitHub [@fff_mals] and functions for post-processing FFF data are available as a separate R package [@fffprocessr].
+We analyzed and presented the data using R version 4.2 [@r] and a collection of contributed packages [@tidyverse; @rmd; @rmd_book; @rmd_cbook]. Material necessary to reproduce the results is available on GitHub [@fff_mals] and functions for post-processing FFF data are available as a separate R package [@fffprocessr].
 
 ### Peak fitting  
 
@@ -317,9 +345,9 @@ peak_pos_p <- combined %>%
 
 ```
 
-Sodium silicate and hexametaphosphate suspensions yielded similar iron fractograms (Figure \@ref(fig:figure-fff)), with primary and secondary light scattering peaks. These peaks had maxima, based on ^57^Fe intensity, at `r pks_txt$min_1`--`r pks_txt$max_1` and `r pks_txt$min_2`--`r pks_txt$max_2` minutes. Iron was also present in a broad peak, eluting between approximately 15 and 30 minutes, that did not coincide with a significant light scattering signal but did adsorb UV light at 254 nm. This peak may represent iron nanoparticles that are too small to be quantified using the online MALS detector [@cuss_af4_icpms_2017]. In sodium hexametaphosphate suspensions, the principal ^31^P peak eluted at `r paste(round(range(peak_pos_p$time), 1), collapse = "--")` minutes, which matches the peak retention of sodium hexametaphosphate in pure water (Figure S1).
+Sodium silicate and hexametaphosphate suspensions yielded similar iron fractograms (Figure \@ref(fig:figure-fff)), with primary and secondary light scattering peaks. These peaks had maxima, based on ^57^Fe intensity, at `r pks_txt$min_1`--`r pks_txt$max_1` and `r pks_txt$min_2`--`r pks_txt$max_2` minutes. Iron was also present in a broad peak, eluting between approximately 15 and 30 minutes, that did not coincide with a significant light scattering signal but did adsorb UV light at 254 nm. This peak may represent iron nanoparticles that are too small to be quantified using the online MALS detector [@cuss_af4_icpms_2017]. In sodium hexametaphosphate suspensions, the principal ^31^P peak eluted at `r paste(round(range(peak_pos_p$time), 1), collapse = "--")` minutes, which aligns with the peak retention of sodium hexametaphosphate in pure water (Figure S1).
 
-```{r figure-fff, fig.cap="Fractograms representing triplicate sodium silicate and hexametaphosphate suspensions and a control suspension (no sequestrant). Theoretical hydrodynamic radius was calculated at constant crossflow, based on channel geometry and flow parameters [@baalousha_size_2006]. Light scattering and absorbance fractograms are displayed as the raw detector responses. ", fig.height=6}
+```{r figure-fff, fig.cap="Fractograms representing triplicate sodium silicate and hexametaphosphate suspensions and a control suspension (no sequestrant). Theoretical hydrodynamic radius was calculated at constant crossflow (≤ 31 min. retention time), based on channel geometry and flow parameters [@baalousha_size_2006]. Light scattering and absorbance fractograms are displayed as the raw detector responses.", fig.height=6}
 
 plot_in <- mals_rg %>% 
   filter(param == "ls90") %>%
@@ -357,14 +385,16 @@ combined %>%
     position = "top",
     sec.axis = sec_axis(
       trans = function(x) 1e9 * calculate_rh(x, w = w_true_fer, Vc = 0.002, Vin = 2e-4),
-      breaks = seq(0, 10, by = 2),
+      breaks = seq(0, 12, by = 2),
+      labels = c(0, 2, 4, 6, 8, 10, ">10"),
       guide = guide_axis(title = "Hydrodynamic radius (nm)")
     )
   ) + 
   scale_color_manual(values = palette[c(6,1,4)]) +
   theme(
     legend.text = ggtext::element_markdown(),
-    strip.text = ggtext::element_markdown()
+    strip.text = ggtext::element_markdown(),
+    # axis.text.x = element_text(hjust = 0)
   ) +
   labs(x = "Retention time (min)", y = NULL, col = NULL) +
   guides(col = guide_legend(nrow = 3))
@@ -423,25 +453,30 @@ radii %>%
   knitr::kable(caption = "Estimated radii of gyration and calculated geometric (equivalent spherical) diameters.")
 ```
 
-### Transmission electron microscopy analysis  
+### Transmission electron micrograph analysis  
 
 ```{r image-j-stats}
 
-susp_summ <- image_j %>% 
-  group_by(susp) %>% 
+susp_summ <- image_j_aug %>% 
+  group_by(susp) %>%
   summarize(
-    m = median(Feret), 
-    q25 = quantile(Feret, .25),
-    q75 = quantile(Feret, .75),
+    across(
+      c(Feret, r, ds), 
+      .fns = list(med = median, lq = ~ quantile(.x, .25), uq = ~ quantile(.x, .75))
+    ),
     n = n()
   ) %>% 
-  mutate(across(where(is.double), ~ signif(.x, 2)))
+  mutate(
+    across(where(is.double), ~ signif(.x, 2)),
+    diam = glue::glue("{Feret_med} ({Feret_lq}--{Feret_uq})"),
+    rnd = glue::glue("{r_med} ({r_lq}--{r_uq})"),
+  )
 
 ```
 
-We identified `r paste(susp_summ$n, collapse = " and ")` particles in TEM images representing sodium silicate and hexametaphosphate suspensions, respectively, with median Feret diameters of `r paste(susp_summ$m, collapse = " and ")` nm (Figure \@ref(fig:figure-image-j)). 
+We identified `r paste(susp_summ$n, collapse = " and ")` particles in TEM images representing sodium silicate and hexametaphosphate suspensions, respectively, with median Feret diameters of `r paste(susp_summ$diam, collapse = " and ")` nm (Figure \@ref(fig:figure-image-j), interquartile ranges in parentheses) and roundness values of `r paste(susp_summ$rnd, collapse = " and ")` (i.e., "sub-rounded" [@li_evaluation_2021]).
 
-Since suspensions must be evaporated on a grid for TEM analysis, aggregates present in TEM images might be different from the larger particles identified by FFF-MALS. Still, there is an approximate correspondence between the equivalent spherical diameters obtained from light scattering data and the Feret distances estimated from TEM images, especially for the primary peak at a retention time of 34--35 minutes. 
+Since suspensions must be evaporated on a grid for TEM analysis, aggregates present in TEM images might be different from the larger particles identified by FFF-MALS. Still, there is an approximate correspondence between the equivalent spherical diameters obtained from light scattering data and the Feret distances estimated from TEM images, especially for the primary peak at a retention time of 34--35 minutes.
 
 ```{r figure-image-j, fig.cap="Histograms representing particles identified in TEM images of sodium silicate and hexametaphosphate-stabilized iron suspensions.", fig.height=2}
 
@@ -516,14 +551,14 @@ recovery_text <- recovery %>%
 ```
 
 ```{r recovery-shmp, eval=FALSE}
-# recovery of SHMP @ 2 mg P/L
+# recovery of SHMP at 2 mg P/L
 pdat %>% 
   filter(time > 10, sample == "HM_2ppm") %>% 
   summarize(recovery = integrate_peak(time, conc, injvol = 5e-4) / 2e3)
 
 ```
 
-We integrated the ^31^P and ^57^Fe signals over each fractogram---excluding the focus period---to estimate the concentrations of each analyte. Then, we compared these estimates to the concentrations determined by direct quantification. Recovery of ^57^Fe was `r recovery_text$percent_recovery_100Si_57Fe` $\pm$ `r recovery_text$sd_percent_recovery_100Si_57Fe` and `r recovery_text$percent_recovery_3PP_57Fe` $\pm$ `r recovery_text$sd_percent_recovery_3PP_57Fe`% in the sodium silicate and hexametaphosphate suspensions (Table \@ref(tab:table-recov)). While FFF recovered essentially all of the iron in sodium silicate suspensions, complexation by hexametaphosphate may have resulted in losses of iron to waste in separations of hexametaphosphate suspensions. And since recovery of P from a sodium hexametaphosphate standard was 111%, the partial P recovery from the iron oxide suspension suggests that hexametaphosphate hydrolyzed to orthophosphate or depolymerized to trimetaphosphate [@bell_hydrolysis_1947], species that readily pass through the FFF membrane to waste (Figure S1). The partial recovery of iron may be due to chelation by trimetaphosphate [@rasmussen_phosphate_1986], which would also escape retention by the membrane.  
+We integrated the ^31^P and ^57^Fe signals over each fractogram---excluding the focus period---to estimate the concentrations of each analyte. Then, we compared these estimates to the concentrations determined by direct ICP-MS quantification (i.e., no FFF). Recovery of ^57^Fe was `r recovery_text$percent_recovery_100Si_57Fe` $\pm$ `r recovery_text$sd_percent_recovery_100Si_57Fe` and `r recovery_text$percent_recovery_3PP_57Fe` $\pm$ `r recovery_text$sd_percent_recovery_3PP_57Fe`% in the sodium silicate and hexametaphosphate suspensions (Table \@ref(tab:table-recov)). While FFF recovered essentially all of the iron in sodium silicate suspensions, complexation by hexametaphosphate may have resulted in losses of iron to waste in separations of hexametaphosphate suspensions. And since recovery of P from a sodium hexametaphosphate standard was 111%, the partial P recovery from the iron oxide suspension suggests that hexametaphosphate hydrolyzed to orthophosphate or depolymerized to trimetaphosphate [@bell_hydrolysis_1947], species that readily pass through the FFF membrane to waste (Figure S1). The partial recovery of iron may be due to chelation by trimetaphosphate [@rasmussen_phosphate_1986], which would also escape retention by the membrane.  
 
 ```{r table-recov}
 
@@ -547,7 +582,8 @@ recovery %>%
 fig_pb_in <- combined %>% 
   filter(
     time > 10, 
-    date == "2021-12-01"
+    date == "2021-12-01",
+    param %in% c("31P", "57Fe", "208Pb")
   )
 
 ```
@@ -565,11 +601,11 @@ fig_pb_in %>%
 ```
 
 
-Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @xie_chapter_2007; @ainsworth_cobalt_1994], and more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015].
+Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @xie_chapter_2007; @ainsworth_cobalt_1994], and more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @mcfadden_contributions_2011; @deshommes_source_2010].
 
-There was little evidence, however, of lead complexation with hexametaphosphate; the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. This suggests that lead interacts preferentially with iron oxide colloids over free hexametaphosphate. The colloids that result from iron corrosion in the presence of a sequestrant, then, may represent an effective transport vector for lead in drinking water. The preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in another recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter, although both groups of colloids appeared to bind lead [@trueman_characterizing_2019]. Studies of natural waters have also found that lead associated preferentially with larger colloids and is strongly correlated with colloidal iron concentrations [@tanguy_removal_2011].
+There was little evidence here, however, of lead complexation with hexametaphosphate; the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. This suggests that lead interacts preferentially with iron oxide colloids over free hexametaphosphate. The colloids that result from iron corrosion in the presence of a sequestrant, then, may represent an effective transport vector for lead in drinking water. The preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in a recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter, although both groups of colloids appeared to bind lead [@trueman_characterizing_2019]. In another study, a greater fraction of dissolved lead adsorbed to iron oxide particles than precipitated with orthophosphate [@shi_lead_2020]. Studies of natural waters have also found that lead associated preferentially with larger colloids and is strongly correlated with colloidal iron concentrations [@tanguy_removal_2011].
 
-```{r figure-pb, fig.cap="Fractograms representing duplicate sodium silicate and hexametaphosphate suspensions; each is paired with an equivalent suspension dosed with 200 µg Pb L^-1^. Light scattering and absorbance fractograms are displayed as the raw detector responses.", fig.height=6}
+```{r figure-pb, fig.cap="Fractograms representing duplicate sodium silicate and hexametaphosphate suspensions; each is paired with an equivalent suspension dosed with 200 µg Pb L^-1^. Light scattering and absorbance fractograms are displayed as the raw detector responses.", fig.height=4}
 
 fig_pb_in %>% 
   left_join(sample_names, by = "sample") %>% 
@@ -587,7 +623,7 @@ fig_pb_in %>%
 
 ```
 
-This transport mechanism has important implications for drinking water quality: when polyphosphate or sodium silicate is added to minimize the aesthetic impacts of iron corrosion, the iron colloids that result may bind significant quantities of lead. And even if preliminary testing yields minimal evidence of lead complexation by the sequestrant itself, its interactions with iron may result in elevated lead concentrations. Corrosion control treatment tests, then, should account for the effects of iron corrosion when it is likely to occur in the distribution system [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @trueman_comparing_2022].
+This transport mechanism has important implications for drinking water quality: when polyphosphate or sodium silicate is added to minimize the aesthetic impacts of iron corrosion, the iron colloids that result may bind lead. In a recent model distribution system study, an abrupt increase in the dose of sodium silicate was followed by elevated iron release from corroded cast iron pipe sections and lead release from lead pipes downstream. That is, while polyphosphate-based sequesration may risk elevated lead due to complexation, sodium silicate may not offer much of a solution: there is still a risk that sequestration will disperse iron particles that then transport lead. Testing that does not account for interactions between lead and iron may miss the true risk of elevated lead caused by sequestration.
 
 # Conclusion  
 

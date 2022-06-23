@@ -20,6 +20,3 @@ unlink(path_temp)
 # supplement:
 
 rmarkdown::render("Rmarkdown/paper-si.Rmd")
-
-
-
