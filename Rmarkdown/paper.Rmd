@@ -239,13 +239,13 @@ We estimated the fraction of colloidal iron present in each of the two light sca
 
 ### Multiangle light scattering  
 
-We estimated the radius of gyration ($r_g$) associated with each light scattering peak and fractogram using the Zimm model [@kammer_fieldflow_2005; @wyatt_light_1993; @baalousha_size_2006]. Specifically, we solved the following equation for $r_g^2$, the mean squared radius of gyration:
+We estimated the radius of gyration ($r_g$) of iron nanoparticles in each suspension using the Zimm model [@kammer_fieldflow_2005; @wyatt_light_1993; @baalousha_size_2006; @petteys_characterization_1998]. Specifically, we solved the following equation for $r_g^2$, the mean squared radius of gyration:
 
 $$\frac{Kc}{R(\theta)} = \frac{1}{M} + \frac{\langle{r^2_g}\rangle}{3M}\left[\frac{4\pi\eta_0}{\lambda}sin(\frac{\theta}{2})\right]^2$$
 
 where $K$ is a constant, $c$ and $M$ are the concentration and molar mass of the analyte, respectively, $\lambda$ is the wavelength of the incident light, $\theta$ is the scattering angle, $\eta_0$ is the index of refraction of the solvent, and $R$ is the Rayleigh ratio, or the scattering intensity above baseline. For environmental colloids, $K$, $c$, and $M$ are usually unknown, but $r_g^2$ can be estimated by regressing $R^{-1}$ on $sin^2(\theta/2)$. That is,
 
-$$\langle{r^2_g}\rangle = \frac{3\beta_1\lambda^2}{16\beta_0\pi^2}$$
+$$\langle{r^2_g}\rangle = \frac{3\beta_1\lambda^2}{16\beta_0\pi^2\eta_0^2}$$
 
 where $\beta_0$ and $\beta_1$ are the intercept and slope of the linear regression. Before fitting the model, data collected at the smallest and largest two scattering angles (7, 12, 156, and 164&deg;) were removed due to excessive noise (Figure \@ref(fig:figure-zimm)).
 
