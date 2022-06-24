@@ -122,7 +122,7 @@ Polyphosphates and sodium silicates are used widely as drinking water additives,
 
 Less is known about the effect of polyphosphate and sodium silicate on the release of iron from iron corrosion scale. In the short term, an elevated dose of sodium silicate (100 mg SiO~2~ L^-1^) may promote colloidal iron release from corroded iron water mains [@li_impact_2020], but little characterization of these colloids is available. The effect of polyphosphate on iron colloid release from corrosion scale is also unclear. Iron colloids are important vectors for trace element transport in drinking water systems, which is particularly relevant for controlling lead in drinking water [@trueman_understanding_2016; @trueman_characterizing_2019; @trueman_new_2016].
 
-Here, we characterize the nanoparticulate iron released from corroding cast iron coupons in the presence of sodium hexametaphosphate---a common polyphosphate additive---and sodium silicate. We determined the concentration and size distribution of colloids (1--1000 nm) and nanoparticles (1--100 nm) using flow field-flow fractionation (FFF) with ultraviolet absorbance, multielement, and multiangle light scattering detectors. We also compare these data with measurements obtained from transmission electron micrographs. We find that both sequestrants yield stable iron nanoparticle suspensions with similar size distributions and that these colloids associate with readily with lead.
+Here, we characterize the nanoparticulate iron released from corroding cast iron coupons in the presence of sodium hexametaphosphate---a common polyphosphate additive---and sodium silicate. We determined the concentration and size distribution of colloids (1--1000 nm) and nanoparticles (1--100 nm) using flow field-flow fractionation (FFF) with ultraviolet absorbance, multielement, and multiangle light scattering detectors. We also compare these data with measurements obtained from transmission electron micrographs. We find that both sequestrants yield stable iron nanoparticle suspensions with similar size distributions and that these particles associate with readily with lead.
 
 # Methods  
 
@@ -231,7 +231,7 @@ At least 13 TEM images were acquired to represent each iron suspension, using a 
 
 ## Data analysis  
 
-We analyzed and presented the data using R version 4.2 [@r] and a collection of contributed packages [@tidyverse; @rmd; @rmd_book; @rmd_cbook]. Material necessary to reproduce the results is available on GitHub [@fff_mals] and functions for post-processing FFF data are available as a separate R package [@fffprocessr].
+We analyzed and presented the data using R version 4.2 [@r] and a collection of contributed packages [@tidyverse; @rmd; @rmd_book; @rmd_cbook; @ggtext]. Material necessary to reproduce the results is available on GitHub [@fff_mals] and functions for post-processing FFF data are available as a separate R package [@fffprocessr].
 
 ### Peak fitting  
 
@@ -385,8 +385,8 @@ combined %>%
     position = "top",
     sec.axis = sec_axis(
       trans = function(x) 1e9 * calculate_rh(x, w = w_true_fer, Vc = 0.002, Vin = 2e-4),
-      breaks = seq(0, 12, by = 2),
-      labels = c(0, 2, 4, 6, 8, 10, ">10"),
+      breaks = c(seq(0, 10, by = 2), 13),
+      labels = c(seq(0, 10, by = 2), ">10"),
       guide = guide_axis(title = "Hydrodynamic radius (nm)")
     )
   ) + 
@@ -434,7 +434,7 @@ radii_text <- radii %>%
 source(here::here("R/peak_fits.R"))
 ```
 
-The estimated radii of gyration characterizing colloids in the primary and secondary peaks ranged from `r radii_text$min_100SiO2_1`--`r radii_text$max_100SiO2_1` and `r radii_text$min_100SiO2_2`--`r radii_text$max_100SiO2_2` nm in sodium silicate suspensions, and `r radii_text$min_3PP_1`--`r radii_text$max_3PP_1` and `r radii_text$min_3PP_2`--`r radii_text$max_3PP_2` nm in hexametaphosphate suspensions (Table \@ref(tab:table-radii)). While the maximum scattering intensities were similar between the two peaks, the second one accounted for an estimated 5%---or less---of the total iron concentration. This is explained by the much larger particle sizes represented in the secondary peak, and the dependence of scattering intensity on both colloid concentration and size [@korgel_vesicle_1998; @baalousha_size_based_2006].
+The estimated radii of gyration characterizing colloids in the primary and secondary peaks ranged from `r radii_text$min_100SiO2_1`--`r radii_text$max_100SiO2_1` and `r radii_text$min_100SiO2_2`--`r radii_text$max_100SiO2_2` nm in sodium silicate suspensions, and `r radii_text$min_3PP_1`--`r radii_text$max_3PP_1` and `r radii_text$min_3PP_2`--`r radii_text$max_3PP_2` nm in hexametaphosphate suspensions (Table \@ref(tab:table-radii)). While the maximum scattering intensities were similar between the two peaks, the second one accounted for an estimated 5%---or less---of the total iron concentration. This is explained by the much larger particle sizes represented in the secondary peak, and the dependence of scattering intensity on both particles concentration and size [@korgel_vesicle_1998; @baalousha_size_based_2006].
 
 ```{r table-radii}
 radii %>% 
@@ -603,7 +603,7 @@ fig_pb_in %>%
 
 Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @xie_chapter_2007; @ainsworth_cobalt_1994], and more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @mcfadden_contributions_2011; @deshommes_source_2010].
 
-There was little evidence here, however, of lead complexation with hexametaphosphate; the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. This suggests that lead interacts preferentially with iron oxide colloids over free hexametaphosphate. The colloids that result from iron corrosion in the presence of a sequestrant, then, may represent an effective transport vector for lead in drinking water. The preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in a recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter, although both groups of colloids appeared to bind lead [@trueman_characterizing_2019]. In another study, a greater fraction of dissolved lead adsorbed to iron oxide particles than precipitated with orthophosphate [@shi_lead_2020]. Studies of natural waters have also found that lead associated preferentially with larger colloids and is strongly correlated with colloidal iron concentrations [@tanguy_removal_2011].
+There was little evidence here, however, of lead complexation with hexametaphosphate; the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. This suggests that lead interacts preferentially with iron oxide colloids over free hexametaphosphate. The colloids that result from iron corrosion in the presence of a sequestrant, then, may represent an effective transport vector for lead in drinking water. The preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in a recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter, although both groups of colloids appeared to bind lead [@trueman_characterizing_2019]. In another study, a greater fraction of dissolved lead adsorbed to iron oxide particles than precipitated with orthophosphate [@shi_lead_2020]. 
 
 ```{r figure-pb, fig.cap="Fractograms representing duplicate sodium silicate and hexametaphosphate suspensions; each is paired with an equivalent suspension dosed with 200 µg Pb L^-1^. Light scattering and absorbance fractograms are displayed as the raw detector responses.", fig.height=4}
 
@@ -623,7 +623,7 @@ fig_pb_in %>%
 
 ```
 
-This transport mechanism has important implications for drinking water quality: when polyphosphate or sodium silicate is added to minimize the aesthetic impacts of iron corrosion, the iron colloids that result may bind lead. In a recent model distribution system study, an abrupt increase in the dose of sodium silicate was followed by elevated iron release from corroded cast iron pipe sections and lead release from lead pipes downstream. That is, while polyphosphate-based sequesration may risk elevated lead due to complexation, sodium silicate may not offer much of a solution: there is still a risk that sequestration will disperse iron particles that then transport lead. Testing that does not account for interactions between lead and iron may miss the true risk of elevated lead caused by sequestration.
+This transport mechanism has important implications for drinking water quality: when polyphosphate or sodium silicate is added to minimize the aesthetic impacts of iron corrosion, the iron colloids that result may bind lead. That is, complexation of lead by polyphosphate [@holm_characterizing_1990; @holm_potential_1991; @edwards_effect_2002] is not the only risk associated with sequestrant use: even sequestrants that do not form strong complexes with lead (e.g., sodium silicates) may have an important effect on lead release. In a recent model distribution system study, for instance, an abrupt increase in the dose of sodium silicate was followed by elevated iron release from corroded cast iron pipe sections and lead release from lead pipes downstream. Testing that does not account for interactions between lead and iron, then, may underestimate the true risk of elevated lead associated with sequestration.
 
 # Conclusion  
 
