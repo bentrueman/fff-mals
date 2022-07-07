@@ -114,7 +114,7 @@ radii %>%
   summarize(across(c(rg_zimm, d_geom), median))
 ```
 
-Sequestrants such as polyphosphate and sodium silicate are used widely to control iron precipitation in drinking water, but less is known about their impact on iron corrosion scale. Here we characterize the nanoparticulate iron (oxyhydr)oxide suspensions that result from corroding cast iron coupons in solutions containing either sodium hexametaphosphate (3 mg P L^-1^) or sodium silicate (100 mg SiO~2~ L^-1^). We determined the elemental composition and size distribution of these suspensions using flow field-flow fractionation with ultraviolet, multielement, and multiangle light scattering detection (FFF-UV-MALS-ICP-MS). Both sequestrants yielded stable iron suspensions, and the pooled median radius of gyration at peak ^57^Fe intensity was 22 nm, corresponding to a sphere-equivalent geometric diameter of 57 nm. The median Feret diameter and ASTM roundness was `r abs_summ$Feret_med` nm and `r abs_summ$r_med`, respectively, as determined by transmission electron microscopy. Lead associated readily with iron nanoparticles, and in the hexametaphosphate suspension it associated preferentially with iron over free hexametaphosphate. Sequestrants then, may interact with iron corrosion scale to yield effective transport vectors for lead in drinking water systems, even when complexation of free lead by the sequestrant is negligible.  
+Sequestrants such as polyphosphate and sodium silicate are used widely to control iron precipitation in drinking water, but less is known about their impact on iron corrosion scale. Here we characterize the nanoparticulate iron (oxyhydr)oxide suspensions that result from corroding cast iron coupons in solutions containing either sodium hexametaphosphate (3 mg P L^-1^) or sodium silicate (100 mg SiO~2~ L^-1^). We determined the elemental composition and size distribution of these suspensions using flow field-flow fractionation with ultraviolet, multielement, and multiangle light scattering detection (FFF-UV-MALS-ICP-MS). Both sequestrants yielded stable iron suspensions, and the pooled median radius of gyration at peak ^57^Fe intensity was 22 nm, corresponding to a sphere-equivalent geometric diameter of 57 nm. The median Feret diameter and ASTM roundness were `r abs_summ$Feret_med` nm and `r abs_summ$r_med`, respectively, as determined by transmission electron microscopy. Lead associated readily with iron nanoparticles, and in the hexametaphosphate suspension it associated preferentially with iron over free hexametaphosphate. Sequestrants then, may interact with iron corrosion scale to yield effective transport vectors for lead in drinking water systems, even when complexation of free lead by the sequestrant is negligible.  
 
 # Introduction  
 
@@ -139,7 +139,7 @@ Coupons were left to stagnate for 24 hours. Afterward, each suspension was mixed
 Iron suspensions were fractionated using a modified version of the method described in a recent paper [@trueman_characterizing_2019]. We used an asymmetric flow FFF system (Postnova AF2000 Multiflow) with a 300 Da poly(ethersulfone) membrane and an autosampler with a 1 mL polyether ether ketone sample loop. The system was coupled sequentially to a UV absorbance detector (Shimadzu SPD-20A), a multiangle light scattering detector (Postnova PN3621), and an ICP-MS (ThermoFisher iCAP-RQ). The mobile phase for all separations was 50 mM tris (hydroxymethyl)aminomethane, adjusted to pH 7.3 with trace metal grade HCl. FFF channel effluent was mixed with internal standards (Sc, In, and Tb) in 2% HNO~3~ using a
 mixing tee.
 
-Method parameters are summarized in Table \@ref(tab:table-run-params). The crossflow was maintained at 2.0 mL min^-1^ for the first 31 minutes of each run (including the focus and transition periods); afterward it was set to decay linearly over 2 minutes to 0.1 mL min^-1^. The crossflow was then maintained at 0.1 mL min^-1^ for 10 minutes; afterward, it was set to zero for the rinse step (the final 10 minutes of the run).
+Method parameters are summarized in Table \@ref(tab:table-run-params). The crossflow was maintained at 2.0 mL min^-1^ for the first 31 minutes of each run (including the focus and transition periods); afterward, it was set to decay linearly over 2 minutes to 0.1 mL min^-1^. The crossflow was then maintained at 0.1 mL min^-1^ for 10 minutes; afterward, it was set to zero for the rinse step (the final 10 minutes of the run).
 
 ```{r table-run-params}
 tibble::tribble(
@@ -163,12 +163,6 @@ tibble::tribble(
 ## Inductively coupled plasma mass spectrometry    
 
 ```{r qc-data}
-
-to_list <- function(x) {
-  x %>% 
-    str_replace("(\\d+)([aA-zZ]+)", "^\\1^\\2") %>% 
-    glue::glue_collapse(sep = ", ", last = " and ")
-}
 
 calib_curves <- calib_icp %>% 
   filter(param %in% c("31P", "57Fe")) %>% 
@@ -209,9 +203,9 @@ dl <- combined %>%
 
 ICP-MS data were acquired using a ThermoFisher iCAP-RQ operated in kinetic energy discrimination mode with He as the collision gas. We calibrated the ICP-MS on each analysis day using multielement standards in 2% HNO~3~ at 25, 100, and 250 µg L^-1^. Standards were introduced to the nebulizer using the ICP-MS autosampler after mixing with FFF channel effluent at the mixing tee. Calibration curves yielded median *r^2^* values of `r calib_curves$r_sq` for `r calib_curves$param`.
 
-Quality control spikes in the same matrix (75 µg L^-1^) yielded median recoveries equaling `r qc$recovery_qc_75ppb`% of `r qc$param_list_qc_75ppb`, respectively. An independently-prepared spike at 40 µg L^-1^ yielded a median `r qc$param_list_qc_ext_40ppb` recovery of `r qc$recovery_qc_ext_40ppb`%. Detection limits were estimated using the 3$\sigma$ method, with $\sigma$ calculated separately for the elution step of `r dl$n` blanks. Median instantaneous detection limits were estimated at `r dl$three_sigma` µg L^-1^ for `r dl$param`.
+Quality control spikes in the same matrix (75 µg L^-1^) yielded median recoveries equaling `r qc$recovery_qc_75ppb`% of `r qc$param_list_qc_75ppb`. An independently-prepared spike at 40 µg L^-1^ yielded a median `r qc$param_list_qc_ext_40ppb` recovery of `r qc$recovery_qc_ext_40ppb`%. Detection limits were estimated using the 3$\sigma$ method, with $\sigma$ calculated separately for the elution step of `r dl$n` blanks. Median instantaneous detection limits were estimated at `r dl$three_sigma` µg L^-1^ for `r dl$param`.
 
-The deviation of the channel thickness from its nominal value of 500 µm was estimated using a method described elsewhere [@litzen_separation_1993], using ferritin and bovine serum albumin as globular protein standards with diffusion coefficients taken from literature [@clough_role_1981; @gaigalas_diffusion_1992]. The FFF method for the globular protein runs is summarized in Table S1.
+The deviation of the channel thickness from its nominal value of 500 µm was estimated using a method described elsewhere [@litzen_separation_1993], using ferritin and bovine serum albumin as globular protein standards with diffusion coefficients drawn from literature [@clough_role_1981; @gaigalas_diffusion_1992]. The FFF method for the globular protein runs is summarized in Table S1.
 
 ```{r calculate-thickness,message=FALSE}
 
@@ -606,7 +600,7 @@ fig_pb_in %>%
 
 Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @xie_chapter_2007; @ainsworth_cobalt_1994] and, more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @mcfadden_contributions_2011; @deshommes_source_2010].
 
-But there was little evidence here of lead complexation with hexametaphosphate; the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. This suggests that lead interacts preferentially with iron oxide colloids over free hexametaphosphate. The colloids that result from iron corrosion in the presence of a sequestrant, then, may represent an effective transport vector for lead in drinking water. The preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in a recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter, although both groups of colloids appeared to bind lead [@trueman_characterizing_2019]. In another study, a greater fraction of dissolved lead adsorbed to iron oxide particles than precipitated with orthophosphate [@shi_lead_2020]. 
+But there was little evidence here of lead complexation by free hexametaphosphate; the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. The preferential interaction of lead with iron over hexametaphosphate suggests that the colloids that result from iron corrosion in the presence of a sequestrant may be a particularly effective transport vector for lead. Preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in a recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter (although both appeared to bind lead) [@trueman_characterizing_2019]. In another study, a greater fraction of dissolved lead adsorbed to iron oxide particles than precipitated with orthophosphate [@shi_lead_2020]. 
 
 ```{r figure-pb, fig.cap="Fractograms representing duplicate sodium silicate and hexametaphosphate suspensions; each is paired with an equivalent suspension dosed with 200 µg Pb L^-1^. Light scattering and absorbance fractograms are displayed as the raw detector responses.", fig.height=4}
 
@@ -626,7 +620,7 @@ fig_pb_in %>%
 
 ```
 
-This transport mechanism has important implications for drinking water quality: when polyphosphate or sodium silicate is added to minimize the aesthetic impacts of iron corrosion, the iron colloids that result may bind lead. That is, complexation of lead by polyphosphate [@holm_characterizing_1990; @holm_potential_1991; @edwards_effect_2002] is not the only risk associated with sequestrant use: even sequestrants that do not form strong complexes with lead (e.g., sodium silicates) may have an important effect on lead release. In a recent model distribution system study, for instance, an abrupt increase in the dose of sodium silicate was followed by elevated iron release from corroded cast iron pipe sections and lead release from lead pipes downstream. Testing that does not account for interactions between lead and iron, then, may underestimate the true risk of elevated lead associated with sequestration.
+This transport mechanism has important implications for drinking water quality: when polyphosphate or sodium silicate is added to minimize the aesthetic impacts of iron corrosion, the iron colloids that result may have a substantial impact on lead release and mobility. That is, complexation of lead by polyphosphate [@holm_characterizing_1990; @holm_potential_1991; @edwards_effect_2002] is not the only risk associated with sequestrant use: even sequestrants that do not form strong complexes with lead (e.g., sodium silicates) may have an important effect on lead release. In a recent model distribution system study, for instance, an abrupt increase in the dose of sodium silicate was followed by elevated iron release from corroded cast iron pipe sections and lead release from lead pipes downstream. Testing that does not account for interactions between lead and iron, then, may underestimate the true risk of elevated lead associated with sequestration.
 
 # Conclusion  
 
