@@ -8,7 +8,7 @@
  collate  en_CA.UTF-8
  ctype    en_CA.UTF-8
  tz       America/Halifax
- date     2022-06-17
+ date     2022-07-07
  rstudio  2022.02.3+492 Prairie Trillium (desktop)
  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 
@@ -46,8 +46,8 @@
  fs            1.5.2      2021-12-08 [1] CRAN (R 4.2.0)
  generics      0.1.2      2022-01-31 [1] CRAN (R 4.2.0)
  ggplot2     * 3.3.6      2022-05-03 [1] CRAN (R 4.2.0)
- ggtext        0.1.1      2020-12-17 [1] CRAN (R 4.2.0)
- glue          1.6.2      2022-02-24 [1] CRAN (R 4.2.0)
+ ggtext      * 0.1.1      2020-12-17 [1] CRAN (R 4.2.0)
+ glue        * 1.6.2      2022-02-24 [1] CRAN (R 4.2.0)
  gridtext      0.1.4      2020-12-10 [1] CRAN (R 4.2.0)
  gtable        0.3.0      2019-03-25 [1] CRAN (R 4.2.0)
  haven         2.5.0      2022-04-15 [1] CRAN (R 4.2.0)
@@ -79,9 +79,10 @@
  pkgconfig     2.0.3      2019-09-22 [1] CRAN (R 4.2.0)
  pkgload       1.2.4      2021-11-30 [1] CRAN (R 4.2.0)
  plyr          1.8.7      2022-03-24 [1] CRAN (R 4.2.0)
+ png           0.1-7      2013-12-03 [1] CRAN (R 4.2.0)
  prettyunits   1.1.1      2020-01-24 [1] CRAN (R 4.2.0)
- processx      3.6.0      2022-06-10 [1] CRAN (R 4.2.0)
- ps            1.7.0      2022-04-23 [1] CRAN (R 4.2.0)
+ processx      3.6.1      2022-06-17 [1] CRAN (R 4.2.0)
+ ps            1.7.1      2022-06-18 [1] CRAN (R 4.2.0)
  purrr       * 0.3.4      2020-04-17 [1] CRAN (R 4.2.0)
  quadprog      1.5-8      2019-11-20 [1] CRAN (R 4.2.0)
  quantmod      0.4.20     2022-04-29 [1] CRAN (R 4.2.0)

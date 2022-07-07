@@ -6,3 +6,10 @@ unfill_vec <- function(x, placeholder = "") {
   ifelse(!is.na(same) & same, placeholder, as.character(x)) 
 }
 
+to_list <- function(x) {
+  x %>% 
+    str_replace("(\\d+)([aA-zZ]+)", "^\\1^\\2") %>% 
+    unique() %>% 
+    glue::glue_collapse(sep = ", ", last = " and ")
+}
+
