@@ -12,6 +12,8 @@ bibliography: references.bib
 csl: environmental-science-and-technology.csl
 ---
 
+<!-- https://doi.org/10.1016/j.carbpol.2008.03.003 -->
+
 ```{r setup, include=FALSE}
 here::i_am("Rmarkdown/paper.Rmd")
 knitr::opts_chunk$set(
@@ -114,13 +116,13 @@ radii %>%
   summarize(across(c(rg_zimm, d_geom), median))
 ```
 
-Sequestrants such as polyphosphate and sodium silicate are used widely to control iron precipitation in drinking water, but less is known about their impact on iron corrosion scale. Here we characterize the nanoparticulate iron (oxyhydr)oxide suspensions that result from corroding cast iron coupons in solutions containing either sodium hexametaphosphate (3 mg P L^-1^) or sodium silicate (100 mg SiO~2~ L^-1^). We determined the elemental composition and size distribution of these suspensions using flow field-flow fractionation with ultraviolet, multielement, and multiangle light scattering detection (FFF-UV-MALS-ICP-MS). Both sequestrants yielded stable iron suspensions, and the pooled median radius of gyration at peak ^57^Fe intensity was 22 nm, corresponding to a sphere-equivalent geometric diameter of 57 nm. The median Feret diameter and ASTM roundness were `r abs_summ$Feret_med` nm and `r abs_summ$r_med`, respectively, as determined by transmission electron microscopy. Lead associated readily with iron nanoparticles, and in the hexametaphosphate suspension it associated preferentially with iron over free hexametaphosphate. Sequestrants then, may interact with iron corrosion scale to yield effective transport vectors for lead in drinking water systems, even when complexation of free lead by the sequestrant is negligible.  
+Sequestrants such as polyphosphate and sodium silicate are used widely to control iron precipitation in drinking water, but less is known about their impacts on iron corrosion scale. Here we characterize the nanoparticulate iron (oxyhydr)oxide suspensions that result from corroding cast iron coupons in solutions containing either sodium hexametaphosphate (3 mg P L^-1^) or sodium silicate (100 mg SiO~2~ L^-1^). We determined the elemental composition and size distribution of these suspensions using flow field-flow fractionation with ultraviolet, multielement, and multiangle light scattering detection (FFF-UV-MALS-ICP-MS). Both sequestrants yielded stable iron suspensions, and the pooled median radius of gyration at peak ^57^Fe intensity was 22 nm, corresponding to a sphere-equivalent geometric diameter of 57 nm. The median Feret diameter and ASTM roundness were `r abs_summ$Feret_med` nm and `r abs_summ$r_med`, respectively, as determined by transmission electron microscopy. Lead associated readily with iron nanoparticles, and in the hexametaphosphate suspension it associated preferentially with iron over free hexametaphosphate. Sequestrants then, may interact with iron corrosion scale to yield effective transport vectors for lead in drinking water systems, even when complexation of free lead by the sequestrant is negligible.  
 
 # Introduction  
 
 Polyphosphates and sodium silicates are used widely as drinking water additives, often to control aesthetic issues caused by iron from source water and pipe corrosion. These additives have been shown to decrease the colour and turbidity of iron suspensions [@robinson_effects_1987; @robinson_iron_1992; @lytle_effect_2002; @rahman_benchscale_2014; @li_understanding_2019]. They reduce particle size, alter morphology, and increase stability by imparting strongly negative zeta potentials [@magnuson_characterization_2001; @lytle_effect_2002; @rahman_benchscale_2014; @li_understanding_2019]. There is also evidence from laboratory studies that they control iron corrosion [@lahodny_sarc_influence_1981; @koudelka_nature_1982].
 
-Less is known about how polyphosphates and silicates impact iron release from corrosion scale. In the short term, an elevated dose of sodium silicate (100 mg SiO~2~ L^-1^) may promote colloidal iron release from corroded iron water mains [@li_impact_2020], but little characterization of these colloids is available. The effect of polyphosphate on iron colloid release from corrosion scale is also unclear. Iron colloids are important vectors for trace element transport in drinking water systems, which is particularly relevant for controlling lead in drinking water [@trueman_understanding_2016; @trueman_characterizing_2019; @trueman_new_2016].
+Less is known about how polyphosphates and silicates impact iron release from corrosion scale. In the short term, an elevated dose of sodium silicate may promote colloidal iron release from corroded iron water mains [@li_impact_2020], but little characterization of these colloids is available. The effect of polyphosphate on iron colloid release from corrosion scale is also unclear, but it could be important: iron colloids are important vectors for trace element transport in drinking water systems, which is particularly relevant for controlling lead in drinking water [@trueman_understanding_2016; @trueman_characterizing_2019; @trueman_new_2016]. Moreover, colloidal lead can be difficult to remove at the point of use [@lytle_lead_2020; @pan_lead_2021; @purchase_understanding_2020].
 
 Here, we characterize the nanoparticulate iron released from corroding cast iron coupons into solutions containing commonly-used polyphosphate- and silicate-based sequestrants. We determined the concentration and size distribution of colloids (1--1000 nm) and nanoparticles (1--100 nm) using flow field-flow fractionation (FFF) with ultraviolet absorbance, multielement, and multiangle light scattering detectors. We also compare these data with measurements obtained from transmission electron micrographs. We find that both sequestrants yield stable iron nanoparticle suspensions with similar size distributions and that these particles associate readily with lead.
 
@@ -139,7 +141,7 @@ Coupons were left to stagnate for 24 hours. Afterward, each suspension was mixed
 Iron suspensions were fractionated using a modified version of the method described in a recent paper [@trueman_characterizing_2019]. We used an asymmetric flow FFF system (Postnova AF2000 Multiflow) with a 300 Da poly(ethersulfone) membrane and an autosampler with a 1 mL polyether ether ketone sample loop. The system was coupled sequentially to a UV absorbance detector (Shimadzu SPD-20A), a multiangle light scattering detector (Postnova PN3621), and an ICP-MS (ThermoFisher iCAP-RQ). The mobile phase for all separations was 50 mM tris (hydroxymethyl)aminomethane, adjusted to pH 7.3 with trace metal grade HCl. FFF channel effluent was mixed with internal standards (Sc, In, and Tb) in 2% HNO~3~ using a
 mixing tee.
 
-Method parameters are summarized in Table \@ref(tab:table-run-params). The crossflow was maintained at 2.0 mL min^-1^ for the first 31 minutes of each run (including the focus and transition periods); afterward, it was set to decay linearly over 2 minutes to 0.1 mL min^-1^. The crossflow was then maintained at 0.1 mL min^-1^ for 10 minutes; afterward, it was set to zero for the rinse step (the final 10 minutes of the run).
+Method parameters are summarized in Table \@ref(tab:table-run-params). The crossflow was maintained at 2.0 mL min^-1^ for the first 31 minutes of each run (including the focus and transition periods); afterward, it was set to decay linearly over 2 minutes to 0.1 mL min^-1^. The crossflow was then maintained at 0.1 mL min^-1^ for 10 minutes; then it was set to zero for the rinse step (the final 10 minutes of the run).
 
 ```{r table-run-params}
 tibble::tribble(
@@ -157,7 +159,7 @@ tibble::tribble(
   "Final crossflow", "0.1 mL min^-1^ (10 min)",
   "Rinse step", "10 min (no crossflow)"
 ) %>% 
-  knitr::kable(caption = "FFF run parameters.")
+  knitr::kable(caption = "FFF run parameters; since sodium silicate suspensions had much higher iron content, the injection volume was halved.")
 ```
 
 ## Inductively coupled plasma mass spectrometry    
@@ -374,7 +376,7 @@ combined %>%
   ) %>% 
   ggplot(aes(time, value, group = interaction(date, sample), col = plot_sample)) + 
   facet_wrap(vars(plot_param), scales = "free_y", ncol = 1) +
-  geom_line() + 
+  geom_line(size = .3) + 
   scale_x_continuous(
     position = "top",
     sec.axis = sec_axis(
@@ -384,7 +386,7 @@ combined %>%
       guide = guide_axis(title = "Hydrodynamic radius (nm)")
     )
   ) + 
-  scale_color_manual(values = palette[c(6,1,4)]) +
+  scale_color_manual(values = palette[c(6,4,1)]) +
   theme(
     legend.text = ggtext::element_markdown(),
     strip.text = ggtext::element_markdown(),
@@ -555,7 +557,7 @@ pdat %>%
 
 ```
 
-We integrated the ^31^P and ^57^Fe signals over each fractogram---excluding the focus period---to estimate the concentrations of each analyte. Then, we compared these estimates to the concentrations determined by direct ICP-MS quantification (i.e., no FFF). Recovery of ^57^Fe was `r recovery_text$percent_recovery_100Si_57Fe` and `r recovery_text$percent_recovery_3PP_57Fe` in the sodium silicate and hexametaphosphate suspensions (Table \@ref(tab:table-recov)). While FFF recovered essentially all of the iron in sodium silicate suspensions, complexation by hexametaphosphate may have resulted in losses of iron to waste in separations of hexametaphosphate suspensions. And since recovery of P from a sodium hexametaphosphate standard was 111%, the partial P recovery from the iron oxide suspension suggests that hexametaphosphate hydrolyzed to orthophosphate or depolymerized to trimetaphosphate [@bell_hydrolysis_1947], species that readily pass through the FFF membrane to waste (Figure S1). The partial recovery of iron may be due to chelation by trimetaphosphate [@rasmussen_phosphate_1986], which would also escape retention by the membrane.  
+We integrated the ^31^P and ^57^Fe signals over each fractogram---excluding the focus period---to estimate the concentrations of each analyte. Then, we compared these estimates to the concentrations determined by direct ICP-MS quantification (i.e., no FFF). Recovery of ^57^Fe was `r recovery_text$percent_recovery_100Si_57Fe` and `r recovery_text$percent_recovery_3PP_57Fe` in the sodium silicate and hexametaphosphate suspensions (Table \@ref(tab:table-recov)). While FFF recovered essentially all of the iron in sodium silicate suspensions, complexation by hexametaphosphate may have resulted in losses of iron to waste in separations of hexametaphosphate suspensions. And since recovery of P from a sodium hexametaphosphate standard was 111%, the partial P recovery from the iron oxide suspension suggests that hexametaphosphate hydrolyzed to orthophosphate or depolymerized to trimetaphosphate [@bell_hydrolysis_1947], species that readily pass through the FFF membrane to waste (Figure S1). The partial recovery of iron may be due to chelation by trimetaphosphate [@rasmussen_phosphate_1986], which would also escape retention by the membrane. In drinking water systems, hexametaphosphate reversion is expected to be significant, especially in older pipe networks [@holm_metaphosphate_2003]. 
 
 ```{r table-recov}
 
@@ -609,8 +611,8 @@ fig_pb_in %>%
   left_join(param_names, by = "param") %>% 
   ggplot(aes(time, conc, col = plot_sample, group = interaction(date, sample))) + 
   facet_wrap(vars(plot_param), scales = "free_y", ncol = 1) + 
-  geom_line() + 
-  scale_color_manual(values = palette[c(1,4,3,6)]) + 
+  geom_line(size = .3) + 
+  scale_color_manual(values = palette[c(6,4,3,1)]) + 
   theme(
     strip.text = ggtext::element_markdown(), 
     legend.text = ggtext::element_markdown()
@@ -620,7 +622,9 @@ fig_pb_in %>%
 
 ```
 
-This transport mechanism has important implications for drinking water quality: when polyphosphate or sodium silicate is added to minimize the aesthetic impacts of iron corrosion, the iron colloids that result may have a substantial impact on lead release and mobility. That is, complexation of lead by polyphosphate [@holm_characterizing_1990; @holm_potential_1991; @edwards_effect_2002] is not the only risk associated with sequestrant use: even sequestrants that do not form strong complexes with lead (e.g., sodium silicates) may have an important effect on lead release. In a recent model distribution system study, for instance, an abrupt increase in the dose of sodium silicate was followed by elevated iron release from corroded cast iron pipe sections and lead release from lead pipes downstream. Testing that does not account for interactions between lead and iron, then, may underestimate the true risk of elevated lead associated with sequestration.
+This transport mechanism has important implications for drinking water quality. When polyphosphate or sodium silicate is added to minimize the aesthetic effects of iron corrosion, the iron colloids that result may increase lead mobility. That is, complexation of lead by polyphosphate [@holm_characterizing_1990; @holm_potential_1991; @edwards_effect_2002] is not the only risk that sequestrant use poses: depending on the relative affinity of lead for the dispersed colloids versus the free sequestrant---and the relative concentrations of the two adsorbents---the dispersion of iron may have a greater effect on lead levels. 
+
+Moreover, even sequestrants that do not form strong complexes with lead (e.g., sodium silicates) may increase lead release. In a recent model distribution system study [@li_impact_2020], for instance, an abrupt increase in the dose of sodium silicate was followed by elevated iron release from corroded cast iron pipe sections and lead release from lead pipes downstream. Testing that does not account for interactions between lead and iron, then, may underestimate the true risk of elevated lead associated with sequestration.
 
 # Conclusion  
 
