@@ -11,7 +11,7 @@ bibliography: references.bib
 csl: environmental-science-and-technology.csl
 ---
 
-This document contains X tables and X figures.  
+This document contains 1 table and 3 figures.  
 
 ```{r setup, include=FALSE}
 here::i_am("Rmarkdown/paper-si.Rmd")
@@ -29,6 +29,7 @@ palette <- wesanderson::wes_palette("Zissou1", 6, type = "continuous")
 ```{r packages, message=FALSE}
 library("tidyverse")
 library("fffprocessr")
+library("ggtext")
 source(here::here("R/functions.R"))
 ```
 
@@ -61,16 +62,6 @@ c(
 
 ```{r plot-names}
 
-param_names <- tibble::tribble(
-   ~param,                       ~plot_param,
-  "208Pb",       "Pb (&mu;g L<sup>-1</sup>)",
-    "31P",        "P (&mu;g L<sup>-1</sup>)",
-   "57Fe",       "Fe (&mu;g L<sup>-1</sup>)",
-   "LS90", "90&deg; light scattering signal",
-"UV254_2",                "UV<sub>254</sub>",
-   "ls90",         "Radius of gyration (nm)"
-)
-
 sample_names <- tibble::tribble(
           ~sample,                                                   ~plot_sample,
         "100SiO2",      "Sodium silicate (100 mg SiO<sub>2</sub> L<sup>-1</sup>)",
@@ -84,8 +75,63 @@ sample_names <- tibble::tribble(
 
 ```
 
+```{r table-s1}
+tibble::tribble(
+  ~Parameter, ~Value,
+  "Injection volume", "50 µL",
+  "Spacer", "500 µm",
+  "Total run time", "33.5 min",
+  "Detector flow", "1 mL min^-1^",
+  "Injection flow", "0.2 mL min^-1^",
+  "Focus flow", "1.5 mL min^-1^",
+  "Focus period", "5 min",
+  "Transition period", "1 min",
+  "Crossflow", "2 mL min^-1^ ",
+) %>% 
+  knitr::kable(caption = "**Table S1.** FFF run parameters for globular protein standards.")
+```
 
-```{r fig-s1, fig.cap="**Figure S1:** Fractograms representing pure solutions of sodium hexameta- and trimeta-phosphate.", fig.height = 2.5, fig.width = 3.33}
+```{r mals-plot, fig.cap="**Figure S1.** Baseline-corrected multi-angle light scattering data (triplicate sodium hexametaphosphate suspensions)."}
+
+param_mals <- distinct(mals_data, param)$param
+striplabs <- str_replace(param_mals, "(ls)(\\d+)", "\\2&deg;")
+names(striplabs) <- param_mals
+striplabs <- as_labeller(striplabs)
+
+# Plot the data at all 21 angles
+
+plot_mals <- function(suspension) {
+  mals_data %>% 
+    filter(time > 30, sample == suspension) %>% 
+    ggplot(aes(time, conc, group = interaction(date, sample))) + 
+    facet_wrap(
+      vars(fct_reorder(param, as.numeric(str_extract(param, "\\d+")))),
+      labeller = striplabs,
+      # scales = "free_y"
+    ) + 
+    geom_line(size = .3) + 
+    theme(
+      legend.position = "bottom",
+      strip.text = ggtext::element_markdown(),
+      axis.text = element_text(size = 5)
+    ) +
+    labs(
+      x = "Retention time (min)",
+      y = "Scattering intensity above baseline",
+      col = NULL
+    )
+
+}
+
+plot_mals("3PP")
+
+```
+
+```{r mals-plot-2, fig.cap="**Figure S2.** Baseline-corrected multi-angle light scattering data (triplicate sodium silicate suspensions)."}
+plot_mals("100SiO2")
+```
+
+```{r fig-s1, fig.cap="**Figure S3:** Fractograms representing pure solutions of sodium hexameta- and trimeta-phosphate.", fig.height = 2, fig.width = 3.33}
 
 pdat %>%
   left_join(sample_names, by = "sample") %>% 
@@ -105,23 +151,6 @@ pdat %>%
   
 ```
 
-
-```{r table-s1}
-tibble::tribble(
-  ~Parameter, ~Value,
-  "Injection volume", "50 µL",
-  "Spacer", "500 µm",
-  "Total run time", "33.5 min",
-  "Detector flow", "1 mL min^-1^",
-  "Injection flow", "0.2 mL min^-1^",
-  "Focus flow", "1.5 mL min^-1^",
-  "Focus period", "5 min",
-  "Transition period", "1 min",
-  "Crossflow", "2 mL min^-1^ ",
-) %>% 
-  knitr::kable(caption = "**Table S1.** FFF run parameters for globular protein standards.")
-```
-
 ```{r checks, eval=FALSE}
 
 # check that peak broadening is minimal between UV and ICP:
@@ -139,21 +168,3 @@ combined %>%
   geom_line()
 
 ```
-
-```{r mals-plot, eval=FALSE}
-
-# Plot the data at all 21 angles
-
-mals_data %>% 
-  filter(time > 10, date < "2021-12-01") %>% 
-  ggplot(aes(time, conc, col = sample, group = interaction(date, sample))) + 
-  facet_wrap(
-    vars(fct_reorder(param, str_extract(param, "\\d+") %>% as.numeric())), 
-    scales = "free_y"
-  ) + 
-  geom_line() + 
-  theme(legend.position = "bottom") +
-  guides(col = guide_legend(nrow = 2)) +
-  labs(col = NULL)
-```
-

@@ -1,18 +1,18 @@
-─ Session info ─────────────────────────────────────────────────────────────────────────────────────────────────────
+─ Session info ──────────────────────────────────────────────────────────────────────
  setting  value
  version  R version 4.2.0 (2022-04-22)
- os       macOS Monterey 12.4
+ os       macOS Monterey 12.5
  system   x86_64, darwin17.0
  ui       RStudio
  language (EN)
  collate  en_CA.UTF-8
  ctype    en_CA.UTF-8
  tz       America/Halifax
- date     2022-08-05
+ date     2022-08-10
  rstudio  2022.07.1+554 Spotted Wakerobin (desktop)
  pandoc   2.18 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 
-─ Packages ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+─ Packages ──────────────────────────────────────────────────────────────────────────
  package     * version    date (UTC) lib source
  assertthat    0.2.1      2019-03-21 [1] CRAN (R 4.2.0)
  backports     1.4.1      2021-12-13 [1] CRAN (R 4.2.0)
@@ -127,4 +127,4 @@
 
  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
 
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────────────

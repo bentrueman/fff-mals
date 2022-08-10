@@ -122,7 +122,7 @@ Sequestrants such as polyphosphate and sodium silicate are used widely to contro
 
 Polyphosphates and sodium silicates are used widely as drinking water additives, often to control aesthetic issues caused by iron from source water and pipe corrosion. These additives have been shown to decrease the colour and turbidity of iron suspensions [@robinson_effects_1987; @robinson_iron_1992; @lytle_effect_2002; @rahman_benchscale_2014; @li_understanding_2019]. They reduce particle size, alter morphology, and increase stability by imparting strongly negative zeta potentials [@magnuson_characterization_2001; @lytle_effect_2002; @rahman_benchscale_2014; @li_understanding_2019]. There is also evidence from laboratory studies that they control iron corrosion [@lahodny_sarc_influence_1981; @koudelka_nature_1982].
 
-Less is known about how polyphosphates and silicates impact iron release from corrosion scale. In the short term, an elevated dose of sodium silicate may promote colloidal iron release from corroded iron water mains [@li_impact_2020], but little characterization of these colloids is available. The effect of polyphosphate on iron colloid release from corrosion scale is also unclear, but it could be important: iron colloids are important vectors for trace element transport in drinking water systems, which is particularly relevant for controlling lead in drinking water [@trueman_understanding_2016; @trueman_characterizing_2019; @trueman_new_2016]. Moreover, colloidal lead can be difficult to remove at the point of use [@lytle_lead_2020; @pan_lead_2021; @purchase_understanding_2020].
+Less is known about how polyphosphates and silicates impact iron release from corrosion scale. In the short term, an elevated dose of sodium silicate may promote colloidal iron release from corroded iron water mains [@li_impact_2020], but little characterization of these colloids is available. The effect of polyphosphate on iron colloid release from corrosion scale is also unclear, but it could be important: iron colloids are vectors for trace element transport in drinking water systems, which is particularly relevant for controlling lead in drinking water [@trueman_understanding_2016; @trueman_characterizing_2019; @trueman_new_2016]. Moreover, colloidal lead can be difficult to remove at the point of use [@lytle_lead_2020; @pan_lead_2021; @purchase_understanding_2020].
 
 Here, we characterize the nanoparticulate iron released from corroding cast iron coupons into solutions containing commonly-used polyphosphate- and silicate-based sequestrants. We determined the concentration and size distribution of colloids (1--1000 nm) and nanoparticles (1--100 nm) using flow field-flow fractionation (FFF) with ultraviolet absorbance, multielement, and multiangle light scattering detectors. We also compare these data with measurements obtained from transmission electron micrographs. We find that both sequestrants yield stable iron nanoparticle suspensions with similar size distributions and that these particles associate readily with lead.
 
@@ -161,6 +161,8 @@ tibble::tribble(
 ) %>% 
   knitr::kable(caption = "FFF run parameters; since sodium silicate suspensions had much higher iron content, the injection volume was halved.")
 ```
+
+The deviation of the FFF channel thickness from its nominal value of 500 µm was estimated using a method described elsewhere [@litzen_separation_1993], using ferritin and bovine serum albumin as globular protein standards with diffusion coefficients drawn from literature [@clough_role_1981; @gaigalas_diffusion_1992]. The FFF method for the globular protein runs is summarized in Table S1. The MALS detector was calibrated and normalized using bovine serum albumin, polystyrene sulfonate sodium salt (63.9 kDa), and a mixture of latex particles with nominal geometric diameters of 60, 125, 350 nm.  
 
 ## Inductively coupled plasma mass spectrometry    
 
@@ -207,8 +209,6 @@ ICP-MS data were acquired using a ThermoFisher iCAP-RQ operated in kinetic energ
 
 Quality control spikes in the same matrix (75 µg L^-1^) yielded median recoveries equaling `r qc$recovery_qc_75ppb`% of `r qc$param_list_qc_75ppb`. An independently-prepared spike at 40 µg L^-1^ yielded a median `r qc$param_list_qc_ext_40ppb` recovery of `r qc$recovery_qc_ext_40ppb`%. Detection limits were estimated using the 3$\sigma$ method, with $\sigma$ calculated separately for the elution step of `r dl$n` blanks. Median instantaneous detection limits were estimated at `r dl$three_sigma` µg L^-1^ for `r dl$param`.
 
-The deviation of the channel thickness from its nominal value of 500 µm was estimated using a method described elsewhere [@litzen_separation_1993], using ferritin and bovine serum albumin as globular protein standards with diffusion coefficients drawn from literature [@clough_role_1981; @gaigalas_diffusion_1992]. The FFF method for the globular protein runs is summarized in Table S1.
-
 ```{r calculate-thickness,message=FALSE}
 
 protein_peaks <- proteins %>%
@@ -239,7 +239,7 @@ We estimated the radius of gyration ($r_g$) of iron nanoparticles in each suspen
 
 $$\frac{Kc}{R(\theta)} = \frac{1}{M} + \frac{\langle{r^2_g}\rangle}{3M}\left[\frac{4\pi\eta_0}{\lambda}sin(\frac{\theta}{2})\right]^2$$
 
-where $K$ is a constant, $c$ and $M$ are the concentration and molar mass of the analyte, respectively, $\lambda$ is the wavelength of the incident light, $\theta$ is the scattering angle, $\eta_0$ is the index of refraction of the solvent, and $R$ is the Rayleigh ratio, or the scattering intensity above baseline. For environmental colloids, $K$, $c$, and $M$ are usually unknown, but $r_g^2$ can be estimated by regressing $R^{-1}$ on $sin^2(\theta/2)$. That is,
+where $K$ is a constant, $c$ and $M$ are the concentration and molar mass of the analyte, respectively, $\lambda$ is the wavelength of the incident light, $\theta$ is the scattering angle, $\eta_0$ is the index of refraction of the solvent, and $R$ is the Rayleigh ratio, or the scattering intensity above baseline at each detector angle (Figures S1--2). For environmental colloids, $K$, $c$, and $M$ are usually unknown, but $r_g^2$ can be estimated by regressing $R^{-1}$ on $sin^2(\theta/2)$. That is,
 
 $$\langle{r^2_g}\rangle = \frac{3\beta_1\lambda^2}{16\beta_0\pi^2\eta_0^2}$$
 
@@ -254,7 +254,7 @@ mals_rg <- mals_data %>%
   calculate_rg(window = .05, method = "zimm") 
 ```
 
-```{r figure-zimm, fig.cap="The Zimm model described the variation in light scattering over the selected range of scattering angles, with r^2^ values of 0.983--0.999.", message=FALSE}
+```{r figure-zimm, fig.cap="The Zimm model described the variation in light scattering over the selected range of scattering angles, with r^2^ values of 0.983--0.999. Peaks 1 and 2 eluted at retention times of 34--35 and 44--45 minutes.", message=FALSE}
 
 # calculate peak light scattering for each sample:
 
@@ -341,7 +341,7 @@ peak_pos_p <- combined %>%
 
 ```
 
-Sodium silicate and hexametaphosphate suspensions yielded similar iron fractograms (Figure \@ref(fig:figure-fff)), with primary and secondary light scattering peaks. These peaks had maxima, based on ^57^Fe intensity, at `r pks_txt$min_1`--`r pks_txt$max_1` and `r pks_txt$min_2`--`r pks_txt$max_2` minutes. Iron was also present in a broad peak, eluting between approximately 15 and 30 minutes, that did not coincide with a significant light scattering signal but did adsorb UV light at 254 nm. This peak may represent iron nanoparticles that are too small to be quantified using the online MALS detector [@cuss_af4_icpms_2017]. In sodium hexametaphosphate suspensions, the principal ^31^P peak eluted at `r paste(round(range(peak_pos_p$time), 1), collapse = "--")` minutes, which aligns with the peak retention of sodium hexametaphosphate in pure water (Figure S1).
+Sodium silicate and hexametaphosphate suspensions yielded similar iron fractograms (Figure \@ref(fig:figure-fff)), with primary and secondary light scattering peaks. These peaks had maxima, based on ^57^Fe intensity, at `r pks_txt$min_1`--`r pks_txt$max_1` and `r pks_txt$min_2`--`r pks_txt$max_2` minutes. Iron was also present in a broad peak, eluting between approximately 15 and 30 minutes, that did not coincide with a significant light scattering signal but did adsorb UV light at 254 nm. This peak may represent iron nanoparticles that are too small to be quantified using the online MALS detector [@cuss_af4_icpms_2017]. In sodium hexametaphosphate suspensions, the principal ^31^P peak eluted at `r paste(round(range(peak_pos_p$time), 1), collapse = "--")` minutes, which aligns with the peak retention of sodium hexametaphosphate in pure water (Figure S3).
 
 ```{r figure-fff, fig.cap="Fractograms representing triplicate sodium silicate and hexametaphosphate suspensions and a control suspension (no sequestrant). Theoretical hydrodynamic radius was calculated at constant crossflow (≤ 31 min. retention time), based on channel geometry and flow parameters [@baalousha_size_2006]. Light scattering and absorbance fractograms are displayed as the raw detector responses.", fig.height=6}
 
@@ -446,7 +446,7 @@ radii %>%
     `Spherical equivalent geometric diameter (nm)` = signif(d_geom, 3),
     `% total Fe` = round(pcent, 1)
   ) %>% 
-  knitr::kable(caption = "Estimated radii of gyration and calculated geometric (equivalent spherical) diameters.")
+  knitr::kable(caption = "Estimated radii of gyration and calculated geometric (equivalent spherical) diameters. Peaks 1 and 2 eluted at retention times of 34--35 and 44--45 minutes.")
 ```
 
 ### Transmission electron micrograph analysis  
@@ -557,7 +557,7 @@ pdat %>%
 
 ```
 
-We integrated the ^31^P and ^57^Fe signals over each fractogram---excluding the focus period---to estimate the concentrations of each analyte. Then, we compared these estimates to the concentrations determined by direct ICP-MS quantification (i.e., no FFF). Recovery of ^57^Fe was `r recovery_text$percent_recovery_100Si_57Fe` and `r recovery_text$percent_recovery_3PP_57Fe` in the sodium silicate and hexametaphosphate suspensions (Table \@ref(tab:table-recov)). While FFF recovered essentially all of the iron in sodium silicate suspensions, complexation by hexametaphosphate may have resulted in losses of iron to waste in separations of hexametaphosphate suspensions. And since recovery of P from a sodium hexametaphosphate standard was 111%, the partial P recovery from the iron oxide suspension suggests that hexametaphosphate hydrolyzed to orthophosphate or depolymerized to trimetaphosphate [@bell_hydrolysis_1947], species that readily pass through the FFF membrane to waste (Figure S1). The partial recovery of iron may be due to chelation by trimetaphosphate [@rasmussen_phosphate_1986], which would also escape retention by the membrane. In drinking water systems, hexametaphosphate reversion is expected to be significant, especially in older pipe networks [@holm_metaphosphate_2003]. 
+We integrated the ^31^P and ^57^Fe signals over each fractogram---excluding the focus period---to estimate the concentrations of each analyte. Then, we compared these estimates to the concentrations determined by direct ICP-MS quantification (i.e., no FFF). Recovery of ^57^Fe was `r recovery_text$percent_recovery_100Si_57Fe` and `r recovery_text$percent_recovery_3PP_57Fe`% in the sodium silicate and hexametaphosphate suspensions (Table \@ref(tab:table-recov)). While FFF recovered essentially all of the iron in sodium silicate suspensions, complexation by hexametaphosphate may have resulted in losses of iron to waste in separations of hexametaphosphate suspensions. And since recovery of P from a sodium hexametaphosphate standard was 111%, the partial P recovery from the iron oxide suspension suggests that hexametaphosphate hydrolyzed to orthophosphate or depolymerized to trimetaphosphate [@bell_hydrolysis_1947], species that readily pass through the FFF membrane to waste (Figure S1). The partial recovery of iron may be due to chelation by trimetaphosphate [@rasmussen_phosphate_1986], which would also escape retention by the membrane. In drinking water systems, hexametaphosphate reversion is expected to be significant, especially in older pipe networks [@holm_metaphosphate_2003]. 
 
 ```{r table-recov}
 
