@@ -1,7 +1,7 @@
 ---
 title: "Sodium silicate and hexametaphosphate promote the release of (oxyhydr)oxide nanoparticles from corroding iron"
-author: "Benjamin F. Trueman, Javier Locsin, Evelyne Dor&eacute;, Kalli Hood, and Graham A. Gagnon"
-date: "Centre for Water Resources Studies,* Department of Civil & Resource Engineering, Dalhousie University, 1360 Barrington St., Halifax, Nova Scotia, Canada B3H 4R2  \n&nbsp;   \n&nbsp;*Corresponding author  \n&nbsp;E-mail: benjamin.trueman@dal.ca    \n&nbsp;Tel:902.494.6070  \n&nbsp;Fax: 902.494.3105"
+author: "Benjamin F. Trueman*, Javier Locsin, Evelyne Dor&eacute;, Kalli Hood, and Graham A. Gagnon"
+date: "Centre for Water Resources Studies, Department of Civil & Resource Engineering, Dalhousie University, 1360 Barrington St., Halifax, Nova Scotia, Canada B3H 4R2  \n&nbsp;   \n&nbsp;*Corresponding author  \n&nbsp;E-mail: benjamin.trueman@dal.ca    \n&nbsp;Tel:902.494.6070  \n&nbsp;Fax: 902.494.3105"
 output:
   bookdown::word_document2: 
     fig_caption: true
@@ -12,6 +12,7 @@ bibliography: references.bib
 csl: environmental-science-and-technology.csl
 ---
 
+<!-- to do: fix link in preprint metadata -->
 <!-- https://doi.org/10.1016/j.carbpol.2008.03.003 -->
 
 ```{r setup, include=FALSE}
