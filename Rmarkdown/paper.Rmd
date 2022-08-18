@@ -9,10 +9,11 @@ output:
     global_numbering: true
     reference_docx: StylesTemplate.docx
 bibliography: references.bib
-csl: environmental-science-and-technology.csl
+csl: royal-society-of-chemistry-with-titles.csl
 ---
 
 <!-- to do: fix link in preprint metadata -->
+<!-- omit the SS sample that makes all the other LS90 fractograms hard to see? -->
 <!-- https://doi.org/10.1016/j.carbpol.2008.03.003 -->
 
 ```{r setup, include=FALSE}
@@ -118,6 +119,56 @@ radii %>%
 ```
 
 Sequestrants such as polyphosphate and sodium silicate are used widely to control iron precipitation in drinking water, but less is known about their impacts on iron corrosion scale. Here we characterize the nanoparticulate iron (oxyhydr)oxide suspensions that result from corroding cast iron coupons in solutions containing either sodium hexametaphosphate (3 mg P L^-1^) or sodium silicate (100 mg SiO~2~ L^-1^). We determined the elemental composition and size distribution of these suspensions using flow field-flow fractionation with ultraviolet, multielement, and multiangle light scattering detection (FFF-UV-MALS-ICP-MS). Both sequestrants yielded stable iron suspensions, and the pooled median radius of gyration at peak ^57^Fe intensity was 22 nm, corresponding to a sphere-equivalent geometric diameter of 57 nm. The median Feret diameter and ASTM roundness were `r abs_summ$Feret_med` nm and `r abs_summ$r_med`, respectively, as determined by transmission electron microscopy. Lead associated readily with iron nanoparticles, and in the hexametaphosphate suspension it associated preferentially with iron over free hexametaphosphate. Sequestrants then, may interact with iron corrosion scale to yield effective transport vectors for lead in drinking water systems, even when complexation of free lead by the sequestrant is negligible.  
+
+# Table of contents entry  
+
+Sequestrants such as polyphosphate and sodium silicate are used to control iron precipitation in drinking water, but they may generate iron nanoparticles that increase lead mobility.
+
+```{r toc-art-save, eval=FALSE}
+
+toc_art <- fig_fff_in %>% 
+  filter(sample != "FeOx-pHcontrol") %>% 
+  ggplot(aes(time, value, col = plot_param, group = interaction(sample, date))) + 
+  geom_line(
+    data = . %>% 
+      filter(plot_param == "Radius of gyration (nm)"),
+    size = .4
+  ) + 
+  geom_line(
+    data = . %>% 
+      filter(plot_param == "Fe (&mu;g L<sup>-1</sup>)") %>% 
+      mutate(value = .3 * value),
+    size = .4
+  ) + 
+  scale_y_continuous(sec.axis = sec_axis(trans = ~ . / .3)) +
+  scale_colour_manual(values = palette[c(1, 6)]) +
+  theme(
+    legend.text = element_markdown(),
+    axis.text.y.right = element_text(colour = palette[1]),
+    axis.text.y.left = element_text(colour = palette[6]),
+    legend.box.margin = margin(),
+    legend.margin = margin()
+  ) + 
+  labs(
+    col = NULL,
+    y = NULL,
+    x = "Retention time (min)"
+  )
+
+ggsave(
+  here::here("Rmarkdown/figures/toc-art.png"), toc_art, 
+  device = "png", dpi = 600, width = 8 / 2.54, height = 4 / 2.54, 
+  bg = "white"
+)
+```
+
+```{r toc-art}
+knitr::include_graphics(here::here("Rmarkdown/figures/toc-art-combined.png"))
+```
+
+# Environmental significance statement  
+
+Chemical sequestrants---mainly polyphosphate and sodium silicate compounds---improve the appearance of drinking water containing iron and manganese. But poyphosphates in particular have a significant drawback: they increase lead solubility. Here we suggest a different mechanism by which sequestrants might increase lead in drinking water: both hexametaphosphate and sodium silicate disperse (oxyhydr)oxide nanoparticles from corroding iron surfaces. These particles represent potential transport vectors for lead and may increase exposure via drinking water.
 
 # Introduction  
 
@@ -236,7 +287,7 @@ We estimated the fraction of colloidal iron present in each of the two light sca
 
 ### Multiangle light scattering  
 
-We estimated the radius of gyration ($r_g$) of iron nanoparticles in each suspension using the Zimm model [@kammer_fieldflow_2005; @wyatt_light_1993; @baalousha_size_2006; @petteys_characterization_1998]. Specifically, we solved the following equation for $r_g^2$, the mean squared radius of gyration:
+We estimated the radius of gyration ($r_g$) of iron nanoparticles in each suspension using the Zimm model [@kammer_fieldflow_2005; @wyatt_light_1993; @baalousha_size_2006; @petteys_characterization_1998; @gigault_asymmetrical_2017]. Specifically, we solved the following equation for $r_g^2$, the mean squared radius of gyration:
 
 $$\frac{Kc}{R(\theta)} = \frac{1}{M} + \frac{\langle{r^2_g}\rangle}{3M}\left[\frac{4\pi\eta_0}{\lambda}sin(\frac{\theta}{2})\right]^2$$
 
@@ -307,8 +358,8 @@ zimm_plot_in %>%
     label.padding = unit(0.05, "lines"),
   ) +
   labs(
-    x = expression(italic(sin^2*(pi * theta))),
-    y = expression(italic(frac(1, "R")%*%10^3)),
+    x = expression(italic(sin^2*(theta / 2))),
+    y = expression(italic(frac(1, "R"*(theta)) %*% 10^-3)),
     col = NULL
   ) + 
   theme(
@@ -346,7 +397,7 @@ Sodium silicate and hexametaphosphate suspensions yielded similar iron fractogra
 
 ```{r figure-fff, fig.cap="Fractograms representing triplicate sodium silicate and hexametaphosphate suspensions and a control suspension (no sequestrant). Theoretical hydrodynamic radius was calculated at constant crossflow (≤ 31 min. retention time), based on channel geometry and flow parameters [@baalousha_size_2006]. Light scattering and absorbance fractograms are displayed as the raw detector responses.", fig.height=6}
 
-plot_in <- mals_rg %>% 
+plot_rg_in <- mals_rg %>% 
   filter(param == "ls90") %>%
   pivot_longer(c(rg_zimm, conc)) %>% 
   mutate(
@@ -358,13 +409,13 @@ plot_in <- mals_rg %>%
     )
   )
 
-combined %>% 
+fig_fff_in <- combined %>% 
   filter(
     time > 10, 
     param != "208Pb",
     date < "2021-12-01"
   ) %>%  
-  bind_rows(filter(plot_in, name == "rg_zimm")) %>% 
+  bind_rows(filter(plot_rg_in, name == "rg_zimm")) %>% 
   left_join(sample_names, by = "sample") %>% 
   left_join(param_names, by = "param") %>% 
   mutate(
@@ -374,7 +425,9 @@ combined %>%
       "Fe (&mu;g L<sup>-1</sup>)", "P (&mu;g L<sup>-1</sup>)", 
       after = 0L
     )
-  ) %>% 
+  )
+
+fig_fff_in %>% 
   ggplot(aes(time, value, group = interaction(date, sample), col = plot_sample)) + 
   facet_wrap(vars(plot_param), scales = "free_y", ncol = 1) +
   geom_line(size = .3) + 

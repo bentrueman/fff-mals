@@ -8,7 +8,7 @@ output:
     reference_docx: StylesTemplate.docx
   html_document: default
 bibliography: references.bib
-csl: environmental-science-and-technology.csl
+csl: royal-society-of-chemistry-with-titles.csl
 ---
 
 This document contains 1 table and 3 figures.  
