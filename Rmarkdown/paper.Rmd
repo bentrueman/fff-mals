@@ -12,8 +12,6 @@ bibliography: references.bib
 csl: royal-society-of-chemistry-with-titles.csl
 ---
 
-<!-- to do: fix link in preprint metadata -->
-<!-- omit the SS sample that makes all the other LS90 fractograms hard to see? -->
 <!-- https://doi.org/10.1016/j.carbpol.2008.03.003 -->
 
 ```{r setup, include=FALSE}
@@ -118,7 +116,7 @@ radii %>%
   summarize(across(c(rg_zimm, d_geom), median))
 ```
 
-Sequestrants such as polyphosphate and sodium silicate are used widely to control iron precipitation in drinking water, but less is known about their impacts on iron corrosion scale. Here we characterize the nanoparticulate iron (oxyhydr)oxide suspensions that result from corroding cast iron coupons in solutions containing either sodium hexametaphosphate (3 mg P L^-1^) or sodium silicate (100 mg SiO~2~ L^-1^). We determined the elemental composition and size distribution of these suspensions using flow field-flow fractionation with ultraviolet, multielement, and multiangle light scattering detection (FFF-UV-MALS-ICP-MS). Both sequestrants yielded stable iron suspensions, and the pooled median radius of gyration at peak ^57^Fe intensity was 22 nm, corresponding to a sphere-equivalent geometric diameter of 57 nm. The median Feret diameter and ASTM roundness were `r abs_summ$Feret_med` nm and `r abs_summ$r_med`, respectively, as determined by transmission electron microscopy. Lead associated readily with iron nanoparticles, and in the hexametaphosphate suspension it associated preferentially with iron over free hexametaphosphate. Sequestrants then, may interact with iron corrosion scale to yield effective transport vectors for lead in drinking water systems, even when complexation of free lead by the sequestrant is negligible.  
+Sequestrants such as polyphosphate and sodium silicate are used widely to control iron precipitation in drinking water, but less is known about their impacts on iron corrosion scale. Here we characterize the nanoparticulate iron (oxyhydr)oxide suspensions that result from corroding cast iron coupons in solutions containing either sodium hexametaphosphate (3 mg P L^-1^) or sodium silicate (100 mg SiO~2~ L^-1^). We determined the elemental composition and size distribution of these suspensions using flow field-flow fractionation with ultraviolet, multielement, and multiangle light scattering detection. Both sequestrants yielded stable iron suspensions, and the pooled median radius of gyration at peak ^57^Fe intensity was 22 nm, corresponding to a sphere-equivalent geometric diameter of 57 nm. The median Feret diameter and ASTM roundness were `r abs_summ$Feret_med` nm and `r abs_summ$r_med`, respectively, as determined by transmission electron microscopy. Lead associated readily with iron nanoparticles, and in the hexametaphosphate suspension it associated preferentially with iron over free hexametaphosphate. Sequestrants then, may interact with iron corrosion scale to yield effective transport vectors for lead in drinking water systems, even when complexation of free lead by the sequestrant is negligible.  
 
 # Table of contents entry  
 
@@ -186,7 +184,7 @@ To generate each suspension, we submerged two cast iron coupons in 50 mL of solu
 
 Each solution contained 35 mg NaHCO~3~ L^-1^ (5 mg C L^-1^, Fisher Chemical) and either sodium hexametaphosphate (3 mg P L^-1^, Alfa Aesar), sodium silicate (100 mg SiO~2~ L^-1^ with a NaO:SiO~2~ ratio of 3.22, National Silicates), or no additive (the control suspension). After preparation and mixing, solution pH was adjusted to 7.5 &plusmn; 0.2 with HNO~3~ or NaOH (Fisher Chemical). 
 
-Coupons were left to stagnate for 24 hours. Afterward, each suspension was mixed by gentle swirling. Suspensions were then filtered through 0.45 µm cellulose nitrate membrane filters (Whatman) using a syringe-mounted apparatus. To minimize adsorption, the first 10 mL of each aliquot was filtered to waste, and the next 20 mL was divided between two smaller polypropylene sample tubes; one for analysis by FFF-UV-MALS-ICP-MS and the other for direct quantification of the same elements by ICP-MS after acidification to pH < 2 with concentrated trace metal grade HNO~3~ (Fisher Chemical). To characterize partitioning of lead, we added 200 µg Pb L^-1^ as Pb(NO~3~)~2~ (Fisher Chemical) to filtered sodium silicate and hexametaphosphate suspensions. Lead was allowed to react for 53 minutes before analysis by FFF. 
+Coupons were left to stagnate for 24 hours. Afterward, each suspension was mixed by gentle swirling. Suspensions were then filtered through 0.45 µm cellulose nitrate membrane filters (Whatman) using a syringe-mounted apparatus. To minimize adsorption, the first 10 mL of each aliquot was filtered to waste, and the next 20 mL was divided between two smaller polypropylene sample tubes; one for analysis by FFF and the other for direct quantification of the same elements by ICP-MS after acidification to pH < 2 with concentrated trace metal grade HNO~3~ (Fisher Chemical). To characterize partitioning of lead, we added 200 µg Pb L^-1^ as Pb(NO~3~)~2~ (Fisher Chemical) to filtered sodium silicate and hexametaphosphate suspensions. Lead was allowed to react for 53 minutes before analysis by FFF. 
 
 ## Field-flow fractionation  
 
@@ -306,7 +304,7 @@ mals_rg <- mals_data %>%
   calculate_rg(window = .05, method = "zimm") 
 ```
 
-```{r figure-zimm, fig.cap="The Zimm model described the variation in light scattering over the selected range of scattering angles, with r^2^ values of 0.983--0.999. Peaks 1 and 2 eluted at retention times of 34--35 and 44--45 minutes.", message=FALSE}
+```{r figure-zimm, fig.cap="The Zimm model described the variation in light scattering over the selected range of scattering angles, with r^2^ values of 0.983--0.999 (row labels: *t*~r~ denotes retention time).", message=FALSE}
 
 # calculate peak light scattering for each sample:
 
@@ -345,8 +343,12 @@ zimm_plot_in %>%
   ggplot(aes(x, y, group = interaction(date, sample))) + 
   facet_grid(
     cols = vars(plot_sample),
-    rows = vars(peak = paste0("Peak ", peak)),
-    scales = "free_y"
+    rows = vars(peak),
+    scales = "free_y",
+    labeller = labeller(.rows = c(
+      "1" = "*t*<sub>r</sub> = 34&ndash;35 min", 
+      "2" = "*t*<sub>r</sub> = 44&ndash;45 min"
+    ))
   ) + 
   geom_smooth(method = "lm", col = palette[1]) +
   geom_point(size = 2, alpha = .5, shape = 16) +
@@ -363,7 +365,8 @@ zimm_plot_in %>%
     col = NULL
   ) + 
   theme(
-    strip.text = ggtext::element_markdown(),
+    strip.text.x = ggtext::element_markdown(),
+    strip.text.y = ggtext::element_markdown(),
     axis.text.x = element_text(angle = 25, hjust = 1)
   ) +
   guides(col = guide_legend(ncol = 2))
@@ -498,7 +501,7 @@ radii %>%
     `Retention time (min)` = signif(time, 3), 
     `Radius of gyration (nm)` = signif(rg_zimm, 3),
     `Spherical equivalent geometric diameter (nm)` = signif(d_geom, 3),
-    `% total Fe` = round(pcent, 1)
+    `% total Fe (approx.)` = round(pcent, 1)
   ) %>% 
   knitr::kable(caption = "Estimated radii of gyration and calculated geometric (equivalent spherical) diameters. Peaks 1 and 2 eluted at retention times of 34--35 and 44--45 minutes.")
 ```
@@ -654,7 +657,7 @@ fig_pb_in %>%
 ```
 
 
-Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @xie_chapter_2007; @ainsworth_cobalt_1994] and, more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @mcfadden_contributions_2011; @deshommes_source_2010].
+Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @ainsworth_cobalt_1994] and, more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @mcfadden_contributions_2011; @deshommes_source_2010].
 
 But there was little evidence here of lead complexation by free hexametaphosphate; the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. The preferential interaction of lead with iron over hexametaphosphate suggests that the colloids that result from iron corrosion in the presence of a sequestrant may be a particularly effective transport vector for lead. Preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in a recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter (although both appeared to bind lead) [@trueman_characterizing_2019]. In another study, a greater fraction of dissolved lead adsorbed to iron oxide particles than precipitated with orthophosphate [@shi_lead_2020]. 
 
