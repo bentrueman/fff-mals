@@ -130,13 +130,13 @@ toc_art <- fig_fff_in %>%
   geom_line(
     data = . %>% 
       filter(plot_param == "Radius of gyration (nm)"),
-    size = .4
+    size = .2
   ) + 
   geom_line(
     data = . %>% 
       filter(plot_param == "Fe (&mu;g L<sup>-1</sup>)") %>% 
       mutate(value = .3 * value),
-    size = .4
+    size = .2
   ) + 
   scale_y_continuous(sec.axis = sec_axis(trans = ~ . / .3)) +
   scale_colour_manual(values = palette[c(1, 6)]) +
@@ -259,7 +259,7 @@ ICP-MS data were acquired using a ThermoFisher iCAP-RQ operated in kinetic energ
 
 Quality control spikes in the same matrix (75 µg L^-1^) yielded median recoveries equaling `r qc$recovery_qc_75ppb`% of `r qc$param_list_qc_75ppb`. An independently-prepared spike at 40 µg L^-1^ yielded a median `r qc$param_list_qc_ext_40ppb` recovery of `r qc$recovery_qc_ext_40ppb`%. Detection limits were estimated using the 3$\sigma$ method, with $\sigma$ calculated separately for the elution step of `r dl$n` blanks. Median instantaneous detection limits were estimated at `r dl$three_sigma` µg L^-1^ for `r dl$param`.
 
-```{r calculate-thickness,message=FALSE}
+```{r calculate-thickness, message=FALSE}
 
 protein_peaks <- proteins %>%
   filter(time < 18, sample != "blank") %>% 
@@ -385,8 +385,8 @@ pks_txt <- peak_pos %>%
   ungroup() %>% 
   group_by(peak) %>% 
   summarize(
-    min = round(min(time), 1),
-    max = round(max(time), 1)
+    min = round(min(time)),
+    max = round(max(time))
   ) %>% 
   pivot_wider(names_from = peak, values_from = c(min, max))
 
@@ -396,9 +396,11 @@ peak_pos_p <- combined %>%
 
 ```
 
-Sodium silicate and hexametaphosphate suspensions yielded similar iron fractograms (Figure \@ref(fig:figure-fff)), with primary and secondary light scattering peaks. These peaks had maxima, based on ^57^Fe intensity, at `r pks_txt$min_1`--`r pks_txt$max_1` and `r pks_txt$min_2`--`r pks_txt$max_2` minutes. Iron was also present in a broad peak, eluting between approximately 15 and 30 minutes, that did not coincide with a significant light scattering signal but did adsorb UV light at 254 nm. This peak may represent iron nanoparticles that are too small to be quantified using the online MALS detector [@cuss_af4_icpms_2017]. In sodium hexametaphosphate suspensions, the principal ^31^P peak eluted at `r paste(round(range(peak_pos_p$time), 1), collapse = "--")` minutes, which aligns with the peak retention of sodium hexametaphosphate in pure water (Figure S3).
+Sodium silicate and hexametaphosphate suspensions yielded similar iron fractograms (Figure \@ref(fig:figure-fff)), with primary and secondary light scattering peaks. These peaks had maxima, based on ^57^Fe intensity, at `r pks_txt$min_1`--`r pks_txt$max_1` and `r pks_txt$min_2`--`r pks_txt$max_2` minutes. Iron was also present in a broad peak, eluting between approximately 15 and 30 minutes, that did not coincide with a significant light scattering signal but did adsorb UV light at 254 nm. This peak may represent iron nanoparticles that are too small to be quantified using the online MALS detector [@cuss_af4_icpms_2017]. In sodium hexametaphosphate suspensions, the principal ^31^P peak eluted at approximately `r unique(round(peak_pos_p$time))` minutes, which aligns with the peak retention of sodium hexametaphosphate in pure water (Figure S3).
 
-```{r figure-fff, fig.cap="Fractograms representing triplicate sodium silicate and hexametaphosphate suspensions and a control suspension (no sequestrant). Theoretical hydrodynamic radius was calculated at constant crossflow (≤ 31 min. retention time), based on channel geometry and flow parameters [@baalousha_size_2006]. Light scattering and absorbance fractograms are displayed as the raw detector responses.", fig.height=6}
+The control suspension---prepared without either sodium silicate or hexametaphosphate---did not contain iron colloids that were detectable by FFF-ICP-MS (Figure \@ref(fig:figure-fff)). This is consistent with previous research showing that, in the absence of a stabilizing agent---polyphosphate, sodium silicate, natural organic matter, etc...---iron oxide nanoparticles tend to form aggregates with diameters greater than 450 nm, the upper size limit considered here [@zhang_impact_2009; @mylon_influence_2004; @rushing_effects_2003].
+
+```{r figure-fff, fig.cap="Fractograms representing triplicate sodium silicate and hexametaphosphate suspensions and a control suspension (no sequestrant). Theoretical hydrodynamic radius was calculated at constant crossflow (≤ 31 min. retention time), based on channel geometry and flow parameters [@baalousha_size_2006]. Light scattering and absorbance fractograms are displayed with the raw detector responses on the y-axis.", fig.height=6}
 
 plot_rg_in <- mals_rg %>% 
   filter(param == "ls90") %>%
@@ -446,8 +448,7 @@ fig_fff_in %>%
   scale_color_manual(values = palette[c(6,4,1)]) +
   theme(
     legend.text = ggtext::element_markdown(),
-    strip.text = ggtext::element_markdown(),
-    # axis.text.x = element_text(hjust = 0)
+    strip.text = ggtext::element_markdown()
   ) +
   labs(x = "Retention time (min)", y = NULL, col = NULL) +
   guides(col = guide_legend(nrow = 3))
@@ -503,7 +504,7 @@ radii %>%
     `Spherical equivalent geometric diameter (nm)` = signif(d_geom, 3),
     `% total Fe (approx.)` = round(pcent, 1)
   ) %>% 
-  knitr::kable(caption = "Estimated radii of gyration and calculated geometric (equivalent spherical) diameters. Peaks 1 and 2 eluted at retention times of 34--35 and 44--45 minutes.")
+  knitr::kable(caption = "Estimated radii of gyration and calculated geometric (equivalent spherical) diameters of iron colloids. Peaks 1 and 2 eluted at retention times of 34--35 and 44--45 minutes. (N.B., the control suspension did not contain iron colloids detectable by FFF-ICP-MS.)")
 ```
 
 ### Transmission electron micrograph analysis  
@@ -614,7 +615,9 @@ pdat %>%
 
 ```
 
-We integrated the ^31^P and ^57^Fe signals over each fractogram---excluding the focus period---to estimate the concentrations of each analyte. Then, we compared these estimates to the concentrations determined by direct ICP-MS quantification (i.e., no FFF). Recovery of ^57^Fe was `r recovery_text$percent_recovery_100Si_57Fe` and `r recovery_text$percent_recovery_3PP_57Fe`% in the sodium silicate and hexametaphosphate suspensions (Table \@ref(tab:table-recov)). While FFF recovered essentially all of the iron in sodium silicate suspensions, complexation by hexametaphosphate may have resulted in losses of iron to waste in separations of hexametaphosphate suspensions. And since recovery of P from a sodium hexametaphosphate standard was 111%, the partial P recovery from the iron oxide suspension suggests that hexametaphosphate hydrolyzed to orthophosphate or depolymerized to trimetaphosphate [@bell_hydrolysis_1947], species that readily pass through the FFF membrane to waste (Figure S1). The partial recovery of iron may be due to chelation by trimetaphosphate [@rasmussen_phosphate_1986], which would also escape retention by the membrane. In drinking water systems, hexametaphosphate reversion is expected to be significant, especially in older pipe networks [@holm_metaphosphate_2003]. 
+We integrated the ^31^P and ^57^Fe signals over each fractogram---excluding the focus period---to estimate the concentrations of each analyte. Then, we compared these estimates to the concentrations determined by direct ICP-MS quantification (i.e., no FFF). Recovery of ^57^Fe was `r recovery_text$percent_recovery_100Si_57Fe` and `r recovery_text$percent_recovery_3PP_57Fe`% in the sodium silicate and hexametaphosphate suspensions (Table \@ref(tab:table-recov)). 
+
+While FFF recovered essentially all of the iron in sodium silicate suspensions, complexation by hexametaphosphate may have resulted in losses of iron to waste in separations of hexametaphosphate suspensions. And since recovery of P from a sodium hexametaphosphate standard was 111%, the partial P recovery from the iron oxide suspension suggests that hexametaphosphate hydrolyzed to orthophosphate or depolymerized to trimetaphosphate [@bell_hydrolysis_1947], species that readily pass through the FFF membrane to waste (Figure S1). The partial recovery of iron may be due to chelation by trimetaphosphate [@rasmussen_phosphate_1986], which would also escape retention by the membrane. In drinking water systems, hexametaphosphate reversion is expected to be significant, especially in older pipe networks [@holm_metaphosphate_2003]. 
 
 ```{r table-recov}
 
@@ -627,7 +630,7 @@ recovery %>%
     `Standard deviation` = signif(sd_percent_recovery, 3),
     N = n
   ) %>% 
-  knitr::kable(caption = "Estimated analyte recovery, by suspension type.")
+  knitr::kable(caption = "Estimated analyte recovery, by suspension type. Since no peaks were identified in fractograms representing the control suspension, recovery of iron was approximately 0%.")
   
 ```
 
@@ -657,11 +660,11 @@ fig_pb_in %>%
 ```
 
 
-Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @ainsworth_cobalt_1994] and, more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @mcfadden_contributions_2011; @deshommes_source_2010].
+Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @ainsworth_cobalt_1994] and, more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @mcfadden_contributions_2011; @deshommes_source_2010]. Given that iron colloids were not detectable in the control suspension, it was excluded from the partitioning experiment. The larger aggregates it contained, though, would also be expected to adsorb lead [@mckenzie_adsorption_1980].
 
-But there was little evidence here of lead complexation by free hexametaphosphate; the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. The preferential interaction of lead with iron over hexametaphosphate suggests that the colloids that result from iron corrosion in the presence of a sequestrant may be a particularly effective transport vector for lead. Preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in a recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter (although both appeared to bind lead) [@trueman_characterizing_2019]. In another study, a greater fraction of dissolved lead adsorbed to iron oxide particles than precipitated with orthophosphate [@shi_lead_2020]. 
+There was little evidence here of lead complexation by free hexametaphosphate: the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. The preferential interaction of lead with iron over hexametaphosphate suggests that the colloids that result from iron corrosion in the presence of a sequestrant may be a particularly effective transport vector for lead. Preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in a recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter (although both appeared to bind lead) [@trueman_characterizing_2019]. In another study, a greater fraction of dissolved lead adsorbed to iron oxide particles than precipitated with orthophosphate [@shi_lead_2020]. 
 
-```{r figure-pb, fig.cap="Fractograms representing duplicate sodium silicate and hexametaphosphate suspensions; each is paired with an equivalent suspension dosed with 200 µg Pb L^-1^. Light scattering and absorbance fractograms are displayed as the raw detector responses.", fig.height=4}
+```{r figure-pb, fig.cap="Fractograms representing duplicate sodium silicate and hexametaphosphate suspensions; each is paired with an equivalent suspension dosed with 200 µg Pb L^-1^. Light scattering and absorbance fractograms are displayed with the raw detector responses on the y-axis.", fig.height=4}
 
 fig_pb_in %>% 
   left_join(sample_names, by = "sample") %>% 
@@ -679,9 +682,9 @@ fig_pb_in %>%
 
 ```
 
-This transport mechanism has important implications for drinking water quality. When polyphosphate or sodium silicate is added to minimize the aesthetic effects of iron corrosion, the iron colloids that result may increase lead mobility. That is, complexation of lead by polyphosphate [@holm_characterizing_1990; @holm_potential_1991; @edwards_effect_2002] is not the only risk that sequestrant use poses: depending on the relative affinity of lead for the dispersed colloids versus the free sequestrant---and the relative concentrations of the two adsorbents---the dispersion of iron may have a greater effect on lead levels. 
+The interaction among corroding iron, sequestrant additives, and lead has important implications for drinking water quality. When polyphosphate or sodium silicate is used to minimize the aesthetic effects of iron corrosion, the iron colloids that result may increase lead mobility. That is, complexation of lead by polyphosphate [@holm_characterizing_1990; @holm_potential_1991; @edwards_effect_2002] is not the only risk that sequestrant use poses: depending on the relative affinity of lead for the dispersed colloids versus the free sequestrant---and the relative concentrations of the two adsorbents---the dispersion of iron may have a greater effect on lead levels. 
 
-Moreover, even sequestrants that do not form strong complexes with lead (e.g., sodium silicates) may increase lead release. In a recent model distribution system study [@li_impact_2020], for instance, an abrupt increase in the dose of sodium silicate was followed by elevated iron release from corroded cast iron pipe sections and lead release from lead pipes downstream. Testing that does not account for interactions between lead and iron, then, may underestimate the true risk of elevated lead associated with sequestration.
+Moreover, even sequestrants that do not form strong complexes with lead (e.g., sodium silicates) may increase lead release. In a recent model distribution system study [@li_impact_2020], for instance, an abrupt increase in the dose of sodium silicate was followed by elevated iron release from corroded cast iron pipe sections and lead release from lead pipes downstream. In the long term, silicate treatment may decrease iron release even if it initially does the opposite [@rushing_effects_2003], but anticipating and preparing for the short-term implications highlighted here will help protect water quality. Testing that does not account for interactions between lead and iron, then, may underestimate the true risk of elevated lead associated with sequestration.
 
 # Conclusion  
 
@@ -694,6 +697,6 @@ This work was funded by Mitacs through the Mitacs Accelerate Program (Reference 
 # References  
 
 ```{r session-info}
-writeLines(capture.output(devtools::session_info()), "session-info.txt")
+writeLines(capture.output(devtools::session_info()), here::here("session-info.txt"))
 ```
 
