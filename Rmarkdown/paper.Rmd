@@ -184,7 +184,7 @@ To generate each suspension, we submerged two cast iron coupons in 50 mL of solu
 
 Each solution contained 35 mg NaHCO~3~ L^-1^ (5 mg C L^-1^, Fisher Chemical) and either sodium hexametaphosphate (3 mg P L^-1^, Alfa Aesar), sodium silicate (100 mg SiO~2~ L^-1^ with a NaO:SiO~2~ ratio of 3.22, National Silicates), or no additive (the control suspension). After preparation and mixing, solution pH was adjusted to 7.5 &plusmn; 0.2 with HNO~3~ or NaOH (Fisher Chemical). 
 
-Coupons were left to stagnate for 24 hours. Afterward, each suspension was mixed by gentle swirling. Suspensions were then filtered through 0.45 µm cellulose nitrate membrane filters (Whatman) using a syringe-mounted apparatus. To minimize adsorption, the first 10 mL of each aliquot was filtered to waste, and the next 20 mL was divided between two smaller polypropylene sample tubes; one for analysis by FFF and the other for direct quantification of the same elements by ICP-MS after acidification to pH < 2 with concentrated trace metal grade HNO~3~ (Fisher Chemical). To characterize partitioning of lead, we added 200 µg Pb L^-1^ as Pb(NO~3~)~2~ (Fisher Chemical) to filtered sodium silicate and hexametaphosphate suspensions. Lead was allowed to react for 53 minutes before analysis by FFF. 
+Coupons were left to stagnate for 24 hours. Afterward, each suspension was mixed by gentle swirling. Suspensions were then filtered through 0.45 µm cellulose nitrate membrane filters (Whatman) using a syringe-mounted apparatus. To limit adsorption, the first 10 mL of each aliquot was filtered to waste, and the next 20 mL was divided between two smaller polypropylene sample tubes; one for analysis by FFF and the other for direct quantification of the same elements by ICP-MS after acidification to pH < 2 with concentrated trace metal grade HNO~3~ (Fisher Chemical). To characterize partitioning of lead, we added 200 µg Pb L^-1^ as Pb(NO~3~)~2~ (Fisher Chemical) to filtered sodium silicate and hexametaphosphate suspensions. Lead was allowed to react for 53 minutes before analysis by FFF. 
 
 ## Field-flow fractionation  
 
@@ -630,7 +630,7 @@ recovery %>%
     `Standard deviation` = signif(sd_percent_recovery, 3),
     N = n
   ) %>% 
-  knitr::kable(caption = "Estimated analyte recovery, by suspension type. Since no peaks were identified in fractograms representing the control suspension, recovery of iron was approximately 0%.")
+  knitr::kable(caption = "Estimated analyte recovery, by suspension type. Since no peaks were identified in fractograms representing the control suspension, recovery of iron by FFF was approximately 0%.")
   
 ```
 
@@ -660,7 +660,7 @@ fig_pb_in %>%
 ```
 
 
-Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @ainsworth_cobalt_1994] and, more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @mcfadden_contributions_2011; @deshommes_source_2010]. Given that iron colloids were not detectable in the control suspension, it was excluded from the partitioning experiment. The larger aggregates it contained, though, would also be expected to adsorb lead [@mckenzie_adsorption_1980].
+Lead partitioned readily to suspended iron oxide colloids when added to the sodium silicate and hexametaphosphate suspensions (Figure \@ref(fig:figure-pb)), with variation in ^57^Fe explaining r^2^ = 99 and 93% of variation in ^208^Pb, respectively. The strong apparent relationship between iron and lead is consistent with much previous research documenting lead adsorption to iron (oxyhydr)oxides [@mckenzie_adsorption_1980; @ainsworth_cobalt_1994] and, more specifically, elevated lead in iron-rich drinking water [@li_impact_2020; @trueman_galvanic_2017; @trueman_understanding_2016; @masters_increased_2015; @mcfadden_contributions_2011; @deshommes_source_2010]. Given that iron colloids with diameters smaller than 450 nm were not detectable in the control suspension, it was excluded from the partitioning experiment. The larger aggregates it contained, though, would also be expected to adsorb lead [@mckenzie_adsorption_1980].
 
 There was little evidence here of lead complexation by free hexametaphosphate: the primary ^31^P signal at a retention time of approximately 14 minutes did not co-occur with ^208^Pb. The preferential interaction of lead with iron over hexametaphosphate suggests that the colloids that result from iron corrosion in the presence of a sequestrant may be a particularly effective transport vector for lead. Preferential partitioning of lead to iron (oxyhydr)oxide colloids was reported in a recent paper, where a much larger fraction of total lead was associated with colloidal iron than colloidal dissolved organic matter (although both appeared to bind lead) [@trueman_characterizing_2019]. In another study, a greater fraction of dissolved lead adsorbed to iron oxide particles than precipitated with orthophosphate [@shi_lead_2020]. 
 
