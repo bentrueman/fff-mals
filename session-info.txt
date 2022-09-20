@@ -8,7 +8,7 @@
  collate  en_CA.UTF-8
  ctype    en_CA.UTF-8
  tz       America/Halifax
- date     2022-09-16
+ date     2022-09-20
  rstudio  2022.07.1+554 Spotted Wakerobin (desktop)
  pandoc   2.18 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 
